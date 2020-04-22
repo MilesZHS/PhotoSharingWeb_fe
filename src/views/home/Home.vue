@@ -3,16 +3,16 @@
     <header-nav>
       <div id="identity-wrapper" v-if="isLogin">
         <div id="avatar-wrapper">
-          <img :src="avatar" id="avatar" alt="">
+          <img :src="avatar" id="avatar" alt="" />
         </div>
         <div id="username">
-          {{userName}}
+          {{ userName }}
         </div>
       </div>
     </header-nav>
     <section id="carousel">
       <div class="block">
-        <el-carousel :height="carouselHeight">
+        <el-carousel :height="carouselHeight + 'px'" :interval="5000">
           <el-carousel-item v-for="(item, id) in bannerList" :key="id">
             <img
               :src="item.imgUrl"
@@ -20,6 +20,52 @@
               :height="carouselHeight"
               class="carousel-img"
             />
+            <div class="mask">
+              <div class="icon-content">
+                <div
+                  id="liulan"
+                  :class="{ active: item.isBrowse }"
+                  @click="addBrowse(item)"
+                >
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    :content="item.browse"
+                    placement="bottom"
+                  >
+                    <span class="iconfont icon-tubiao_liulan"></span>
+                  </el-tooltip>
+                </div>
+                <div
+                  id="download"
+                  :class="{ active: item.isDownload }"
+                  @click="addDownload(item)"
+                >
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    :content="item.download"
+                    placement="bottom"
+                  >
+                    <span class="iconfont icon-tubiao_xiazai"></span>
+                  </el-tooltip>
+                </div>
+                <div
+                  id="dianzan"
+                  :class="{ active: item.isLike }"
+                  @click="addLike(item)"
+                >
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    :content="item.like"
+                    placement="bottom"
+                  >
+                    <span class="iconfont icon-tubiao_dianzan"></span>
+                  </el-tooltip>
+                </div>
+              </div>
+            </div>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -29,7 +75,7 @@
 </template>
 
 <script>
-import HeaderNav from '../../components/HeaderNav.vue'
+import HeaderNav from "../../components/HeaderNav.vue"
 export default {
   components: {
     HeaderNav
@@ -37,21 +83,39 @@ export default {
   data() {
     return {
       isLogin: false,
-      userName: '18560677018',
-      avatar: require('../../assets/logo.png'),
+      userName: "18560677018",
+      avatar: require("../../assets/logo.png"),
       screenWidth: "",
       bannerList: [
         {
           id: "1",
-          imgUrl: require("../../assets/image/DSC02318.jpg")
+          imgUrl: require("../../assets/image/DSC02318.jpg"),
+          browse: "20",
+          like: "20",
+          download: "30",
+          isBrowse: false,
+          isLike: false,
+          isDownload: false
         },
         {
           id: "2",
-          imgUrl: require("../../assets/image/DSC02318.jpg")
+          imgUrl: require("../../assets/image/DSC02318.jpg"),
+          browse: "20",
+          like: "20",
+          download: "30",
+          isBrowse: false,
+          isLike: false,
+          isDownload: false
         },
         {
           id: "3",
-          imgUrl: require("../../assets/image/DSC02318.jpg")
+          imgUrl: require("../../assets/image/DSC02318.jpg"),
+          browse: "20",
+          like: "20",
+          download: "30",
+          isBrowse: false,
+          isLike: false,
+          isDownload: false
         }
       ]
     }
@@ -60,7 +124,36 @@ export default {
     // eslint-disable-next-line vue/return-in-computed-property
     carouselHeight: function() {
       console.log(this.screenWidth)
-      return this.screenWidth > 768 ? "800px" : "300px"
+      return this.screenWidth > 768 ? "800" : "300"
+    }
+  },
+  methods: {
+    addBrowse(item) {
+      if (item.isBrowse === true) {
+        item.browse = (parseInt(item.browse) - parseInt(1)).toString()
+        item.isBrowse = false
+      } else {
+        item.browse = (parseInt(item.browse) + parseInt(1)).toString()
+        item.isBrowse = true
+      }
+    },
+    addDownload(item) {
+      if (item.isDownload === true) {
+        item.download = (parseInt(item.download) - parseInt(1)).toString()
+        item.isDownload = false
+      } else {
+        item.download = (parseInt(item.download) + parseInt(1)).toString()
+        item.isDownload = true
+      }
+    },
+    addLike(item) {
+      if (item.isLike === true) {
+        item.like = (parseInt(item.like) - parseInt(1)).toString()
+        item.isLike = false
+      } else {
+        item.like = (parseInt(item.like) + parseInt(1)).toString()
+        item.isLike = true
+      }
     }
   },
   mounted() {
@@ -73,12 +166,12 @@ export default {
 </script>
 
 <style scoped>
-#identity-wrapper{
+#identity-wrapper {
   width: 100%;
   height: 60px;
   line-height: 60px;
 }
-#avatar-wrapper{
+#avatar-wrapper {
   width: 36px;
   height: 36px;
   overflow: hidden;
@@ -86,19 +179,20 @@ export default {
   display: inline-block;
   vertical-align: middle;
 }
-#avatar{
+#avatar {
   width: 36px;
   height: 36px;
   object-fit: cover;
   vertical-align: baseline;
 }
-#username{
+#username {
   height: 60px;
   line-height: 60px;
   display: inline-block;
   padding-left: 10px;
   color: white;
 }
+
 .carousel-img {
   width: 100%;
   object-fit: cover;
@@ -108,9 +202,37 @@ export default {
   --swiper-navigation-color: white; /* 单独设置按钮颜色 */
   --swiper-navigation-size: 30px; /* 设置按钮大小 */
 }
-
 #carousel {
   margin-top: -80px;
+}
+.mask {
+  width: 140px;
+  height: 40px;
+  line-height: 40px;
+  position: fixed;
+  top: 760px;
+  right: 4%;
+  z-index: 999;
+}
+.mask .icon-content {
+  display: flex;
+  height: 40px;
+  line-height: 40px;
+  justify-content: space-around;
+}
+.mask .icon-content div {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+}
+.active {
+  background-color: rgb(255, 27, 137) !important;
+  color: white;
 }
 @media screen and (max-width: 768px) {
   #carousel {
@@ -121,8 +243,16 @@ export default {
     --swiper-navigation-color: #ff1b89; /* 单独设置按钮颜色 */
     --swiper-navigation-size: 30px; /* 设置按钮大小 */
   }
-  #username{
+  #username {
     color: #848484;
+  }
+  .mask {
+    width: 120px;
+    height: 36px;
+    position: fixed;
+    z-index: 999;
+    top: 264px;
+    right: 2%;
   }
 }
 </style>
