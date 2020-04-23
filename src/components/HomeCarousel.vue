@@ -51,7 +51,7 @@
                     :content="item.like"
                     placement="bottom"
                   >
-                    <span class="iconfont icon-tubiao_dianzan"></span>
+                    <span class="iconfont icon-tubiao_dianzan span-outline"></span>
                   </el-tooltip>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default {
     // eslint-disable-next-line vue/return-in-computed-property
     carouselHeight: function() {
       console.log(this.screenWidth)
-      return this.screenWidth > 768 ? "600" : "300"
+      return this.screenWidth > 768 ? "600" : "200"
     }
   },
   methods: {
@@ -185,6 +185,9 @@ export default {
   background-color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
 }
+.span-outline::before{
+  outline: none !important;
+}
 .active {
   background-color: rgb(255, 27, 137) !important;
   color: white;
@@ -203,7 +206,7 @@ export default {
     height: 36px;
     position: fixed;
     z-index: 999;
-    top: 264px;
+    top: 164px;
     right: 2%;
   }
 }
