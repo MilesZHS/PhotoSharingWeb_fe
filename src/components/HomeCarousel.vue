@@ -106,7 +106,7 @@ export default {
     // eslint-disable-next-line vue/return-in-computed-property
     carouselHeight: function() {
       console.log(this.screenWidth)
-      return this.screenWidth > 768 ? "800" : "300"
+      return this.screenWidth > 768 ? "600" : "300"
     }
   },
   methods: {
@@ -165,7 +165,7 @@ export default {
   height: 40px;
   line-height: 40px;
   position: fixed;
-  top: 760px;
+  top: 560px;
   right: 4%;
   z-index: 999;
 }

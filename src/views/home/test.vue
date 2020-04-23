@@ -43,15 +43,25 @@
       <div class="content">
         <transition enter-active-class="animated fadeIn">
           <div id="classify" v-if="tabName === 'classify'">
-            <div id="classify-left">
-              zuoce
-            </div>
+            <div id="classify-left"></div>
             <div id="classify-right">
-              <ul id="classify-waterfall">
-                <li v-for="(item,id) in items" :key="id">
-                  <img :src="item.imgUrl" alt="">
-                </li>
-              </ul>
+              <waterfall
+                :line-gap="190"
+                :watch="items"
+                :line="line"
+                :fix-height="true"
+                :align="align"
+              >
+                <waterfall-slot
+                  v-for="(item, index) in items"
+                  :key="item.id"
+                  :width="item.width"
+                  :height="item.height"
+                  :order="index"
+                >
+                  <img :src="item.imgUrl" alt="" height="180px" />
+                </waterfall-slot>
+              </waterfall>
             </div>
           </div>
         </transition>
@@ -70,14 +80,20 @@
 <script>
 import HeaderNav from "../../components/HeaderNav.vue"
 import HomeCarousel from "../../components/HomeCarousel.vue"
+import Waterfall from "vue-waterfall/lib/waterfall"
+import WaterfallSlot from "vue-waterfall/lib/waterfall-slot"
 import "../../assets/css/animate.min.css"
 export default {
   components: {
     HeaderNav,
     HomeCarousel,
+    Waterfall,
+    WaterfallSlot
   },
   data() {
     return {
+      line: "h",
+      align: "center",
       items: [
         {
           id: 1,
@@ -217,40 +233,6 @@ export default {
 }
 .tab-container ul li:active {
   animation: scaleLi 3s;
-}
-#classify{
-  width: 90%;
-  margin: 0% auto;
-}
-#classify div{
-  display: inline-block;
-}
-#classify-left{
-  width: 8%;
-  height: 1000px;
-}
-#classify-right{
-  width: 92%;
-}
-#classify-waterfall{
-  display: flex;
-  flex-wrap: wrap;
-  padding: 15px 5px;
-}
-#classify-waterfall::after{
-  content: '';
-  flex-grow: 9999;
-}
-#classify-waterfall li{
-  flex-grow: 1;
-  overflow: hidden;
-  margin: 5px;
-  border-radius: 8px;
-}
-#classify-waterfall li img{
-  height: 180px;
-  min-width: 100%;
-  object-fit: cover;
 }
 @keyframes scaleLi {
   0% {
