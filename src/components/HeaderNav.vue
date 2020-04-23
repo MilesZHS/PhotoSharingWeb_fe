@@ -3,7 +3,7 @@
     <header>
       <nav>
         <ul>
-          <li id="logo">PhotoSharing</li>
+          <li id="logo"><router-link to="/">PhotoSharing</router-link></li>
           <li id="search">
             <div id="search-wrapper">
               <input
@@ -18,7 +18,7 @@
           </li>
           <li id="identity">
             <slot>
-                <router-link to="/identity">登录&nbsp;|&nbsp;注册</router-link>
+              <router-link to="/identity">登录&nbsp;|&nbsp;注册</router-link>
             </slot>
           </li>
         </ul>
@@ -54,11 +54,14 @@ nav ul {
   src: url("../assets/tff/Roseonly.ttf");
 }
 #logo {
+  line-height: 60px;
+}
+#logo a {
   font-family: roseonly;
   font-size: 36px;
   font-weight: 300;
-  line-height: 60px;
   color: white;
+  text-decoration: none;
 }
 #search-wrapper {
   width: 440px;
@@ -99,9 +102,9 @@ nav ul {
   cursor: pointer;
 }
 #identity {
-    width: 200px;
-    line-height: 60px;
-    text-align: right;
+  width: 200px;
+  line-height: 60px;
+  text-align: right;
 }
 #identity a {
   text-decoration: none;
@@ -119,7 +122,7 @@ nav ul {
     background-color: rgb(255, 255, 255);
     background-image: none;
   }
-  #logo {
+  #logo a{
     /* background-image: -webkit-linear-gradient( #FF1A89, #F57F66);
     background-clip: text;
     -webkit-text-fill-color: transparent; */
