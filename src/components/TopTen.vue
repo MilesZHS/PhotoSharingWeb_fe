@@ -28,9 +28,17 @@
           </div>
           <div style="padding: 14px;">
             <span>{{ item.imgName }}</span>
+            <time class="time" style="float:right">{{ item.create_time }}</time>
             <div class="bottom clearfix">
-              <time class="time">{{ item.create_time }}</time>
               <div class="top-ten-btn-group">
+                <div
+                  id="collect-btn"
+                  :class="{ topTenBtnActive: item.isCollect }"
+                  @click="topTenCollect(item)"
+                >
+                  <span class="iconfont icon-tubiao_shoucang"></span>
+                </div>
+                <span>{{ item.collect }}</span>
                 <div
                   id="like-btn"
                   :class="{ topTenBtnActive: item.isLike }"
@@ -76,7 +84,9 @@ export default {
           like: "10972",
           sort: 1,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 2,
@@ -88,7 +98,9 @@ export default {
           like: "1088",
           sort: 2,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 3,
@@ -100,7 +112,9 @@ export default {
           like: "888",
           sort: 3,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 4,
@@ -112,7 +126,9 @@ export default {
           like: "800",
           sort: 4,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 5,
@@ -124,7 +140,9 @@ export default {
           like: "666",
           sort: 5,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 6,
@@ -136,7 +154,9 @@ export default {
           like: "10972",
           sort: 6,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 7,
@@ -148,7 +168,9 @@ export default {
           like: "1088",
           sort: 7,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 8,
@@ -160,7 +182,9 @@ export default {
           like: "888",
           sort: 8,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 9,
@@ -172,7 +196,9 @@ export default {
           like: "800",
           sort: 9,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         },
         {
           id: 10,
@@ -184,7 +210,9 @@ export default {
           like: "666",
           sort: 10,
           isDownload: false,
-          isLike: false
+          isLike: false,
+          collect: 0,
+          isCollect: false
         }
       ]
     }
@@ -206,6 +234,15 @@ export default {
       } else {
         item.isDownload = true
         item.download = (parseInt(item.download) + parseInt(1)).toString()
+      }
+    },
+    topTenCollect(item) {
+      if (item.isCollect === true) {
+        item.isCollect = false
+        item.collect = (parseInt(item.collect) - parseInt(1)).toString()
+      } else {
+        item.isCollect = true
+        item.collect = (parseInt(item.collect) + parseInt(1)).toString()
       }
     }
   }
@@ -237,7 +274,7 @@ export default {
 }
 .card-content {
   height: 280px;
-  padding: 16px 8px;
+  padding: 8px 8px;
   flex-grow: 1;
   overflow: hidden;
 }
@@ -256,10 +293,9 @@ export default {
   transform: scale(1.5);
 }
 .top-ten-btn-group {
-  width: 60%;
-  float: right;
+  width: 100%;
   text-align: right;
-  padding-bottom: 10px;
+  padding-top: 10px;
 }
 .top-ten-btn-group div {
   display: inline-block;
@@ -273,7 +309,7 @@ export default {
   cursor: pointer;
 }
 .top-ten-btn-group > span {
-  margin-right: 10px;
+  margin-right: 16px;
 }
 .topTenBtnActive {
   color: white;

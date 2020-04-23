@@ -13,17 +13,17 @@
             <div class="mask">
               <div class="icon-content">
                 <div
-                  id="liulan"
-                  :class="{ active: item.isBrowse }"
-                  @click="addBrowse(item)"
+                  id="shoucang"
+                  :class="{ active: item.isCollect }"
+                  @click="addCollect(item)"
                 >
                   <el-tooltip
                     class="item"
                     effect="dark"
-                    :content="item.browse"
+                    :content="item.collect"
                     placement="bottom"
                   >
-                    <span class="iconfont icon-tubiao_liulan"></span>
+                    <span class="iconfont icon-tubiao_shoucang"></span>
                   </el-tooltip>
                 </div>
                 <div
@@ -72,30 +72,30 @@ export default {
         {
           id: "1",
           imgUrl: require("../assets/image/DSC02318.jpg"),
-          browse: "20",
+          collect: "20",
           like: "20",
           download: "30",
-          isBrowse: false,
+          isCollect: false,
           isLike: false,
           isDownload: false
         },
         {
           id: "2",
           imgUrl: require("../assets/image/DSC02318.jpg"),
-          browse: "20",
+          collect: "20",
           like: "20",
           download: "30",
-          isBrowse: false,
+          isCollect: false,
           isLike: false,
           isDownload: false
         },
         {
           id: "3",
           imgUrl: require("../assets/image/DSC02318.jpg"),
-          browse: "20",
+          collect: "20",
           like: "20",
           download: "30",
-          isBrowse: false,
+          isCollect: false,
           isLike: false,
           isDownload: false
         }
@@ -105,18 +105,18 @@ export default {
   computed: {
     // eslint-disable-next-line vue/return-in-computed-property
     carouselHeight: function() {
-      console.log(this.screenWidth)
+      // console.log(this.screenWidth)
       return this.screenWidth > 768 ? "600" : "200"
     }
   },
   methods: {
-    addBrowse(item) {
-      if (item.isBrowse === true) {
-        item.browse = (parseInt(item.browse) - parseInt(1)).toString()
-        item.isBrowse = false
+    addCollect(item) {
+      if (item.isCollect === true) {
+        item.collect = (parseInt(item.collect) - parseInt(1)).toString()
+        item.isCollect = false
       } else {
-        item.browse = (parseInt(item.browse) + parseInt(1)).toString()
-        item.isBrowse = true
+        item.collect = (parseInt(item.collect) + parseInt(1)).toString()
+        item.isCollect = true
       }
     },
     addDownload(item) {

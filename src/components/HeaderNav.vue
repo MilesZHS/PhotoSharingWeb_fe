@@ -1,22 +1,23 @@
 <template>
   <div>
-    <header>
+    <header :class="{headerWhiteBg:whiteBg,hideSearchClass:isHideSearch}">
       <nav>
         <ul>
-          <li id="logo"><router-link to="/">PhotoSharing</router-link></li>
-          <li id="search">
+          <li id="logo" :class="{logoWhiteBg:whiteBg}"><router-link to="/">PhotoSharing</router-link></li>
+          <li id="search" v-if="!isHideSearch">
             <div id="search-wrapper">
               <input
                 type="text"
                 id="search-input"
                 placeholder="搜索图片关键词"
+                 :class="{inputWhiteBg:whiteBg}"
               />
-              <button id="search-btn">
+              <button id="search-btn"  :class="{buttonWhiteBg:whiteBg}">
                 <i class="el-icon-search"></i> 搜索
               </button>
             </div>
           </li>
-          <li id="identity">
+          <li id="identity" :class="{identityWhiteBg:whiteBg}">
             <slot>
               <router-link to="/identity">登录&nbsp;|&nbsp;注册</router-link>
             </slot>
@@ -28,7 +29,35 @@
 </template>
 
 <script>
-export default {}
+export default {
+  props: ['bgColor','hideSearch'],
+  data(){
+    return {
+      screenWidth: ''
+    }
+  },
+  computed: {
+    whiteBg(){
+      if(this.bgColor === true){
+        return true
+      }else{
+        return false
+      }
+    },
+    isHideSearch(){
+      if(this.screenWidth < 768 && this.hideSearch === true){
+        return true
+      }
+      return false
+    }
+  },
+  mounted(){
+    this.screenWidth = window.innerWidth
+    window.onresize = () => {
+      this.screenWidth = window.innerWidth
+    }
+  }
+}
 </script>
 
 <style>
@@ -114,6 +143,25 @@ nav ul {
 #identity a:hover {
   color: #ff1b89;
 }
+
+/* 白色主题样式 */
+.headerWhiteBg{
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #c4c4c4 !important;
+  background-image: none !important;
+}
+.logoWhiteBg a{
+  color: #ff1b89 !important;
+}
+.identityWhiteBg a{
+  color: #ff1b89 !important;
+}
+.inputWhiteBg{
+  background-color: #f1f1f1 !important;
+}
+.buttonWhiteBg{
+  background-color: #f1f1f1 !important;
+}
 @media screen and (max-width: 768px) {
   header {
     width: 100%;
@@ -121,6 +169,9 @@ nav ul {
     line-height: 60px;
     background-color: rgb(255, 255, 255);
     background-image: none;
+  }
+  .hideSearchClass{
+    height: auto;
   }
   #logo a{
     /* background-image: -webkit-linear-gradient( #FF1A89, #F57F66);

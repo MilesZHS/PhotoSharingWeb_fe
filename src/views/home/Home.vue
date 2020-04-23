@@ -54,6 +54,14 @@
         </transition>
       </div>
     </section>
+    <div id="aside-btn">
+      <div id="goto-top-btn" @click="gotoTop()">
+        <span class="iconfont icon-shangla"></span>
+      </div>
+      <div id="upload-btn">
+        <span class="iconfont icon-shangchuan"></span>
+      </div>
+    </div>
     <page-footer></page-footer>
   </div>
 </template>
@@ -65,7 +73,7 @@ import "../../assets/css/animate.min.css"
 import HomeClassify from "../../components/HomeClassify.vue"
 import TopTen from "../../components/TopTen.vue"
 import NewUpload from "../../components/NewUpload.vue"
-import PageFooter from '../../components/PageFooter.vue'
+import PageFooter from "../../components/PageFooter.vue"
 export default {
   components: {
     HeaderNav,
@@ -81,6 +89,11 @@ export default {
       isLogin: true,
       userName: "18560677018",
       avatar: require("../../assets/logo.png")
+    }
+  },
+  methods: {
+    gotoTop() {
+      window.scrollTo(0, 0)
     }
   }
 }
@@ -147,6 +160,35 @@ export default {
   padding-left: 10px;
   color: white;
 }
+#aside-btn{
+  width: 48px;
+  height: 110px;
+  position: fixed;
+  top: 60%;
+  right: 1%;
+  z-index: 999999;
+}
+#goto-top-btn {
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+  line-height: 48px;
+  text-align: center;
+  color: white;
+  background-color: #ff1b89;
+  cursor: pointer;
+}
+#upload-btn {
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+  line-height: 48px;
+  text-align: center;
+  color: white;
+  background-color: #ff1b89;
+  cursor: pointer;
+  margin-top: 14px;
+}
 @media screen and (max-width: 1200px) {
   .tab-container {
     width: 60%;
@@ -161,11 +203,11 @@ export default {
   }
   .tab-container ul li {
     width: 30%;
-    font-size: 16px;
+    font-size: 14px;
   }
   .liActive {
     color: black !important;
-    font-size: 20px !important;
+    font-size: 16px !important;
     font-weight: 600;
   }
   .liSpanActive {
