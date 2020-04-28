@@ -17,6 +17,16 @@ Vue.use(VueLazyload,{
   loading:'http://qdu17zs.com/loading.gif'
 })
 
+router.beforeEach((to,from,next) => {
+  if(localStorage.getItem('user') || to.path === '/identity') {
+    next()
+  }else {
+    next({
+      path: '/identity'
+    })
+  }
+})
+
 new Vue({
   router,
   store,

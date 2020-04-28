@@ -145,13 +145,26 @@
       </div>
     </section>
     <section>
-      <div class="tab-containe"></div>
+      <div class="tab-container">
+        <ul>
+          <li
+            @click="changeTabName(item)"
+            :class="{ tabActive: isTabName === item }"
+            v-for="(item, index) in tabList"
+            :key="index"
+          >
+            {{ item }}
+          </li>
+        </ul>
+        <div id="hr"></div>
+      </div>
     </section>
     <section>
-      <div class="upload"></div>
-      <div class="download"></div>
-      <div class="like"></div>
-      <div class="collect"></div>
+      <user-upload v-if="isTabName === '上传记录'"></user-upload>
+      <user-download v-if="isTabName === '下载历史'"></user-download>
+      <user-like v-if="isTabName === '点赞记录'"></user-like>
+      <user-liked v-if="isTabName === '收到的赞'"></user-liked>
+      <user-collect v-if="isTabName === '收藏夹'"></user-collect>
     </section>
   </div>
 </template>
@@ -159,13 +172,25 @@
 <script>
 import HeaderNav from "../../components/HeaderNav.vue"
 import AvatarUpload from "../../components/avatar/AvatarUpload.vue"
+import UserUpload from "../../components/user/UserUpload.vue"
+import UserDownload from "../../components/user/UserDownload.vue"
+import UserLike from "../../components/user/UserLike.vue"
+import UserCollect from '../../components/user/UserCollect.vue'
+import UserLiked from '../../components/user/UserLiked.vue'
 export default {
   components: {
     HeaderNav,
-    AvatarUpload
+    AvatarUpload,
+    UserUpload,
+    UserDownload,
+    UserLike,
+    UserCollect,
+    UserLiked
   },
   data() {
     return {
+      tabList: ["上传记录", "下载历史", "点赞记录", "收到的赞", "收藏夹"],
+      isTabName: "上传记录",
       activeNames: [], //elementui折叠面板
       headerColorWhite: true,
       hideSearch: true,
@@ -187,6 +212,12 @@ export default {
   methods: {
     handleChange(val) {
       console.log(val)
+    },
+    handleTabClick(tab, event) {
+      console.log(tab, event)
+    },
+    changeTabName(item) {
+      this.isTabName = item
     }
   }
 }
@@ -304,6 +335,33 @@ section {
 .user-mobile {
   display: none;
 }
+.tab-container {
+  width: 40%;
+  margin: 0 auto;
+}
+.tab-container ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+.tab-container ul li {
+  text-align: center;
+  /* width: 20%; */
+  font-size: 14px;
+  height: 30px;
+  line-height: 30px;
+  cursor: pointer;
+  border-bottom: 2px solid #c4c4c4;
+}
+.tabActive {
+  color: #ff1b89;
+  border-bottom: 2px solid #ff1b89 !important;
+}
+#hr {
+  border-top: 2px solid #c4c4c4;
+  margin-top: -2px;
+}
 @media screen and (max-width: 1200px) {
   #username {
     color: #848484;
@@ -361,46 +419,24 @@ section {
     width: 25%;
     text-align: center;
   }
-  .question-mobile{
+  .question-mobile {
     width: 100%;
   }
-  .question-mobile ul{
+  .question-mobile ul {
     list-style: none;
     margin-left: 16px;
   }
-  .question-mobile ul li{
+  .question-mobile ul li {
     height: 24px;
     line-height: 24px;
   }
-  .question-mobile ul li a{
+  .question-mobile ul li a {
     text-decoration: none;
     color: #848484;
   }
-  /* .userinfo-container {
+  .tab-container {
     width: 100%;
-    display: block;
-    height: auto;
-  }
-  .userinfo-container h3 {
-    text-align: center;
-  }
-  .user-avatar {
-    display: none;
-  }
-  .user-info {
-    width: 100%;
-  }
-  .user-info table {
     margin: 0 auto;
   }
-  .user-info table tr td:first-child {
-    width: 50%;
-  }
-  .user-info table tr td:last-child {
-    width: 50%;
-  }
-  .question {
-    display: none;
-  } */
 }
 </style>
