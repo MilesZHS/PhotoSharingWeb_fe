@@ -10,4 +10,8 @@
   padding: 0%;
   outline: none;
 }
+a{
+  text-decoration: none;
+  color: #848484;
+}
 </style>

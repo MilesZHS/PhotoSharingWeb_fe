@@ -66,166 +66,7 @@
         <span class="iconfont icon-tuichu"></span>
       </div>
     </div>
-    <div class="dialog-container" v-if="dialogFormVisible">
-      <el-dialog title="图片上传" :visible.sync="dialogFormVisible">
-        <el-form :model="uploadForm">
-          <el-form-item :label-width="formLabelWidth">
-            <el-upload
-              class="upload-demo"
-              drag
-              :data="qn"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              action="http://upload-z1.qiniup.com"
-              multiple
-              v-if="!uploadForm.imgUrl"
-            >
-              <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                将文件拖到此处，或<em>点击上传</em>
-              </div>
-              <div class="el-upload__tip" slot="tip">
-                图片大小不超过20M
-              </div>
-            </el-upload>
-            <!-- <el-dialog :visible.sync="uploadForm.imgUrl !== ''">
-                
-              </el-dialog> -->
-            <img
-              width="360px"
-              v-if="uploadForm.imgUrl"
-              :src="uploadForm.imgUrl"
-              alt=""
-            />
-          </el-form-item>
-          <el-form-item label="图片名称" :label-width="formLabelWidth">
-            <el-input
-              v-model="uploadForm.name"
-              autocomplete="off"
-              style="width:360px"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="图片标签" :label-width="formLabelWidth">
-            <el-tag
-              :key="tag"
-              v-for="tag in uploadForm.tags"
-              closable
-              :disable-transitions="false"
-              @close="handleClose(tag)"
-            >
-              {{ tag }}
-            </el-tag>
-            <el-input
-              class="input-new-tag"
-              v-if="inputVisible"
-              v-model="inputValue"
-              ref="saveTagInput"
-              size="small"
-              @keyup.enter.native="handleInputConfirm"
-              @blur="handleInputConfirm"
-            >
-            </el-input>
-            <el-button
-              v-else
-              class="button-new-tag"
-              size="small"
-              @click="showInput"
-              >+ New Tag</el-button
-            >
-          </el-form-item>
-          <el-form-item label="首页展示" :label-width="formLabelWidth">
-            <el-switch
-              v-model="uploadForm.homeShow"
-              active-text="展示"
-              inactive-text="不展示"
-            >
-            </el-switch>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="uploadImg('pc')">确 定</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <div class="dialog-container" v-if="dialogFormVisibleMobile">
-      <div class="dialog-wrapper">
-        <el-form :model="uploadForm">
-          <el-form-item :label-width="uploadLabelWidth">
-            <div class="upload-el-wrapper">
-              <el-upload
-                :data="qn"
-                v-if="!uploadForm.imgUrl"
-                class="upload-demo"
-                drag
-                action="http://upload-z1.qiniup.com"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload"
-                multiple
-              >
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__text">
-                  将文件拖到此处，或<em>点击上传</em>
-                </div>
-                <div class="el-upload__tip" slot="tip">
-                  只能上传jpg/png文件，且不超过500kb
-                </div>
-              </el-upload>
-              <img
-                v-if="uploadForm.imgUrl"
-                :src="uploadForm.imgUrl"
-                width="360px"
-              />
-            </div>
-          </el-form-item>
-          <el-form-item label="图片名称" :label-width="formLabelWidthMobile">
-            <el-input
-              v-model="uploadForm.name"
-              style="width:300px"
-              autocomplete="off"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="图片标签" :label-width="formLabelWidthMobile">
-            <el-tag
-              :key="tag"
-              v-for="tag in uploadForm.tags"
-              closable
-              :disable-transitions="false"
-              @close="handleClose(tag)"
-            >
-              {{ tag }}
-            </el-tag>
-            <el-input
-              class="input-new-tag"
-              v-if="inputVisible"
-              v-model="inputValue"
-              ref="saveTagInput"
-              size="small"
-              @keyup.enter.native="handleInputConfirm"
-              @blur="handleInputConfirm"
-            >
-            </el-input>
-            <el-button
-              v-else
-              class="button-new-tag"
-              size="small"
-              @click="showInput"
-              >+ New Tag</el-button
-            >
-          </el-form-item>
-          <el-form-item label="首页展示" :label-width="formLabelWidthMobile">
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisibleMobile = false">取 消</el-button>
-          <el-button type="primary" @click="uploadImg('mobile')"
-            >确 定</el-button
-          >
-        </div>
-      </div>
-    </div>
+    <image-uploader :userId="userId" :classifyList="classifyList" v-if="showUploadForm"></image-uploader>
     <page-footer></page-footer>
   </div>
 </template>
@@ -238,9 +79,11 @@ import HomeClassify from "../../components/HomeClassify.vue"
 import TopTen from "../../components/TopTen.vue"
 import NewUpload from "../../components/NewUpload.vue"
 import PageFooter from "../../components/PageFooter.vue"
+import ImageUploader from "../../components/ImageUploader"
+import event from "../../common/Event.js"
 import axios from "axios"
 import global from "../../common/global.js"
-import common from "../../common/common.js"
+// import common from "../../common/common.js"
 export default {
   components: {
     HeaderNav,
@@ -248,37 +91,19 @@ export default {
     HomeClassify,
     TopTen,
     NewUpload,
-    PageFooter
+    PageFooter,
+    ImageUploader
   },
   data() {
     return {
       tabName: "classify",
-      dialogFormVisible: false,
-      dialogFormVisibleMobile: false,
       imgUrl: "",
       isLogin: false,
       userName: "",
       userId: "",
       avatar: "",
-      uploadForm: {
-        imgUrl: "",
-        name: "",
-        tags: [],
-        user_id: "",
-        homeShow: true,
-        width: "",
-        height: ""
-      },
-      inputVisible: false,
-      inputValue: "",
-      formLabelWidth: "220px",
-      formLabelWidthMobile: "80px",
-      uploadLabelWidth: "20px",
-      screenWidth: "",
-      qn: {
-        token: "",
-        key: ""
-      }
+      showUploadForm: false,
+      classifyList: []
     }
   },
   methods: {
@@ -293,105 +118,15 @@ export default {
       this.userName = userInfo.username
       this.avatar = userInfo.avatar
     },
-    handleClose(tag) {
-      this.uploadForm.tags.splice(this.uploadForm.tags.indexOf(tag), 1)
-    },
-    showInput() {
-      this.inputVisible = true
-      this.$nextTick(() => {
-        this.$refs.saveTagInput.$refs.input.focus()
-      })
-    },
-    handleInputConfirm() {
-      let inputValue = this.inputValue
-      if (inputValue) {
-        this.uploadForm.tags.push(inputValue)
-      }
-      this.inputVisible = false
-      this.inputValue = ""
-    },
-    handleAvatarSuccess(res, file) {
-      // console.log(res)
-      this.imageUrl = URL.createObjectURL(file.raw) + '?imageslim'
-      this.uploadForm.imgUrl = global.qiniuUrl + res.key
-      this.uploadForm.name = file.name
-      const getImgInfo = axios.create()
-      getImgInfo
-        .get(global.qiniuUrl + res.key + "?imageInfo")
-        .then(res => {
-          // console.log(res)
-          this.uploadForm.width = res.data.width
-          this.uploadForm.height = res.data.height
-          // console.log(this.uploadForm)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    beforeAvatarUpload(file) {
-      // const isJPG = file.type === "image/jpeg"
-      const isLt20M = file.size / 1024 / 1024 < 20
-      this.qn.key = new Date().getTime() + "___" + file.name
-      // if (!isJPG) {
-      //   this.$message.error("上传头像图片只能是 JPG 格式!")
-      // }
-      if (!isLt20M) {
-        this.$message.error("上传头像图片大小不能超过 20MB!")
-      }
-      // return isJPG && isLt20M
-      return isLt20M
-    },
-    showDialog() {
-      if (this.userId != null) {
-        this.uploadForm.user_id = this.userId
-        const token = JSON.parse(localStorage.getItem("user"))["token"]
-        const getUploadToken = axios.create()
-        getUploadToken
-          .post(
-            global.host + "uploadtoken",
-            {},
-            {
-              headers: {
-                token: token
-              }
-            }
-          )
-          .then(res => {
-            this.qn.token = res["data"]
-            this.screenWidth >= 768
-              ? (this.dialogFormVisible = true)
-              : (this.dialogFormVisibleMobile = true)
-          })
-          .catch(err => {
-            console.log(err)
-          })
-      }
-    },
     logout() {
       localStorage.removeItem("user")
       this.$router.push("/identity")
     },
-    uploadImg(type) {
-      const uploadReq = axios.create()
-      const uploadForm1 = common.deepCopy(this.uploadForm)
-      const token = JSON.parse(localStorage.getItem("user"))["token"]
-      uploadReq
-        .post(global.host + "upload", uploadForm1, {
-          headers: {
-            token: token
-          }
-        })
-        .then(res => {
-          console.log(res)
-          if (type === "pc") {
-            this.dialogFormVisible = false
-          } else {
-            this.dialogFormVisibleMobile = false
-          }
-        })
-        .catch(err => {
-          console.log(err.response)
-        })
+    showDialog() {
+      this.showUploadForm = true
+    },
+    closeDialog(flag) {
+      this.showUploadForm = flag
     }
   },
   created() {
@@ -404,12 +139,30 @@ export default {
       this.userName = user.username
       this.avatar = user.avatar
     }
+    const token = JSON.parse(localStorage.getItem("user"))["token"]
+    const getTags = axios.create()
+    getTags
+      .get(global.host + "classifylist", {
+        params: {},
+        headers: {
+          token: token
+        }
+      })
+      .then(res => {
+        this.classifyList = res.data.data
+      }).catch(err => {
+        console.log(err.response)
+      })
   },
   mounted() {
     this.screenWidth = window.innerWidth
     window.onresize = () => {
       this.screenWidth = window.innerWidth
     }
+    event.$on("closeDialog", this.closeDialog)
+  },
+  beforeDestroy() {
+    event.$off("closeDialog", this.closeDialog)
   }
 }
 </script>
@@ -518,41 +271,6 @@ export default {
   cursor: pointer;
   margin-top: 14px;
 }
-.el-tag + .el-tag {
-  margin-left: 10px;
-}
-.button-new-tag {
-  margin-left: 10px;
-  height: 32px;
-  line-height: 30px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.input-new-tag {
-  width: 90px;
-  margin-left: 10px;
-  vertical-align: bottom;
-}
-/* .dialog-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(97, 96, 96, 0.3);
-  z-index: 999999;
-}
-.dialog-wrapper {
-  width: 500px;
-  height: 600px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -350px;
-  margin-left: -300px;
-  background-color: white;
-  padding: 50px 50px 50px 50px;
-} */
 @media screen and (max-width: 1200px) {
   .tab-container {
     width: 60%;
@@ -577,27 +295,5 @@ export default {
   .liSpanActive {
     border-bottom: 4px solid #ff1b89;
   }
-  .dialog-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(97, 96, 96, 0.3);
-    z-index: 999999;
-  }
-  .dialog-wrapper {
-    width: 100%;
-    height: 500px;
-    position: absolute;
-    top: 50%;
-    margin-top: -300px;
-    background-color: white;
-    padding: 20px 20px 20px 20px;
-  }
-  /* .upload-el-wrapper {
-    width: 260px !important;
-    overflow: hidden;
-  } */
 }
 </style>

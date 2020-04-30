@@ -1,33 +1,18 @@
 <template>
   <div>
     <div id="top-ten">
-      <div class="card-content" v-for="(item, id) in topTen" :key="id">
+      <div class="card-content" v-for="(item, index) in topTen" :key="index">
         <div class="medal">
-          <img
-            width="48px"
-            :src="medal.goldImg"
-            alt=""
-            v-if="item.sort === 1"
-          />
-          <img
-            width="36px"
-            :src="medal.silverImg"
-            alt=""
-            v-if="item.sort === 2"
-          />
-          <img
-            width="24px"
-            :src="medal.copperImg"
-            alt=""
-            v-if="item.sort === 3"
-          />
+          <img width="48px" :src="medal.goldImg" alt="" v-if="index === 0" />
+          <img width="36px" :src="medal.silverImg" alt="" v-if="index === 1" />
+          <img width="24px" :src="medal.copperImg" alt="" v-if="index === 2" />
         </div>
         <el-card :body-style="{ padding: '0px' }">
           <div class="image-wrapper">
             <img v-lazy="item.imgUrl" class="image" />
           </div>
           <div style="padding: 14px;">
-            <span>{{ item.imgName }}</span>
+            <span>{{ item.name }}</span>
             <time class="time" style="float:right">{{ item.create_time }}</time>
             <div class="bottom clearfix">
               <div class="top-ten-btn-group">
@@ -52,7 +37,12 @@
                   :class="{ topTenBtnActive: item.isDownload }"
                   @click="topTenDownload(item)"
                 >
-                  <span class="iconfont icon-tubiao_xiazai"></span>
+                  <a
+                    :href="downloadUrl"
+                    :class="{ topTenBtnActive: item.isDownload }"
+                  >
+                    <span class="iconfont icon-tubiao_xiazai"></span>
+                  </a>
                 </div>
                 <span>{{ item.download }}</span>
               </div>
@@ -65,6 +55,9 @@
 </template>
 
 <script>
+import axios from "axios"
+import global from "../common/global.js"
+import common from "../common/common.js"
 export default {
   data() {
     return {
@@ -73,178 +66,94 @@ export default {
         silverImg: require("../assets/web/silver.png"),
         copperImg: require("../assets/web/copper.png")
       },
-      topTen: [
-        {
-          id: 1,
-          imgUrl: require("../assets/web/1.jpg"),
-          create_time: "2020-4-23",
-          imgName: "xxx",
-          username: "xxxxx",
-          download: "48",
-          like: "10972",
-          sort: 1,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 2,
-          imgUrl: require("../assets/web/2.jpg"),
-          create_time: "2020-4-20",
-          imgName: "xxx2",
-          username: "xxxxx",
-          download: "47",
-          like: "1088",
-          sort: 2,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 3,
-          imgUrl: require("../assets/web/3.jpg"),
-          create_time: "2020-4-11",
-          imgName: "xxx3",
-          username: "xxxxx",
-          download: "12",
-          like: "888",
-          sort: 3,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 4,
-          imgUrl: require("../assets/web/4.jpg"),
-          create_time: "2020-4-21",
-          imgName: "xxx4",
-          username: "xxxxx4",
-          download: "10",
-          like: "800",
-          sort: 4,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 5,
-          imgUrl: require("../assets/web/5.jpg"),
-          create_time: "2020-4-6",
-          imgName: "xxx5",
-          username: "xxxxx5",
-          download: "8",
-          like: "666",
-          sort: 5,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 6,
-          imgUrl: require("../assets/web/6.jpg"),
-          create_time: "2020-4-23",
-          imgName: "xxx",
-          username: "xxxxx",
-          download: "48",
-          like: "10972",
-          sort: 6,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 7,
-          imgUrl: require("../assets/web/7.jpg"),
-          create_time: "2020-4-20",
-          imgName: "xxx2",
-          username: "xxxxx",
-          download: "47",
-          like: "1088",
-          sort: 7,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 8,
-          imgUrl: require("../assets/web/8.jpg"),
-          create_time: "2020-4-11",
-          imgName: "xxx3",
-          username: "xxxxx",
-          download: "12",
-          like: "888",
-          sort: 8,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 9,
-          imgUrl: require("../assets/web/9.jpg"),
-          create_time: "2020-4-21",
-          imgName: "xxx4",
-          username: "xxxxx4",
-          download: "10",
-          like: "800",
-          sort: 9,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        },
-        {
-          id: 10,
-          imgUrl: require("../assets/web/10.jpg"),
-          create_time: "2020-4-6",
-          imgName: "xxx5",
-          username: "xxxxx5",
-          download: "8",
-          like: "666",
-          sort: 10,
-          isDownload: false,
-          isLike: false,
-          collect: 0,
-          isCollect: false
-        }
-      ]
+      topTen: [],
+      downloadUrl: ""
     }
   },
   methods: {
     topTenLike(item) {
       if (item.isLike === true) {
         item.isLike = false
-        item.like = (parseInt(item.like) - parseInt(1)).toString()
+        let res = common.cancelLike(item.id)
+        res.then(result => {
+          item.like = result
+          // console.log(item.like)
+        })
+        // item.like = (parseInt(item.like) - parseInt(1)).toString()
       } else {
         item.isLike = true
-        item.like = (parseInt(item.like) + parseInt(1)).toString()
+        let res = common.addLike(item.id)
+        res.then(result => {
+          item.like = result
+          // console.log(item.like)
+        })
+        // item.like = (parseInt(item.like) + parseInt(1)).toString()
       }
     },
     topTenDownload(item) {
-      if (item.isDownload === true) {
-        item.isDownload = false
-        item.download = (parseInt(item.download) - parseInt(1)).toString()
-      } else {
+      // const name = item.imgUrl.split('/').pop()
+      // this.downloadUrl = item.imgUrl + '?attname=' + encodeURI(name)
+      // console.log(this.downloadUrl)
+      // if (item.isDownload === true) {
+      //   item.isDownload = false
+      //   item.download = (parseInt(item.download) - parseInt(1)).toString()
+      // } else {
+      //   item.isDownload = true
+      //   item.download = (parseInt(item.download) + parseInt(1)).toString()
+      // }
+      const name = item.imgUrl.split("/").pop()
+      const name1 = name.split("?").shift();
+      const a = item.imgUrl.split('?')
+      const newUrl = a[0]
+      this.downloadUrl = newUrl + "?attname=" + encodeURI(name1)
+      if (item.isDownload === false) {
+        let res = common.addDownload(item.id)
+        res.then(result => {
+          item.download = result
+        })
         item.isDownload = true
-        item.download = (parseInt(item.download) + parseInt(1)).toString()
+      } else {
+        let res = common.addDownload(item.id)
+        res.then(result => {
+          item.download = result
+        })
       }
     },
     topTenCollect(item) {
       if (item.isCollect === true) {
+        let res = common.cancelCollect(item.id)
+        res.then(result => {
+          item.collect = result
+        })
         item.isCollect = false
-        item.collect = (parseInt(item.collect) - parseInt(1)).toString()
       } else {
+        let res = common.addCollect(item.id)
+        res.then(result => {
+          item.collect = result
+        })
         item.isCollect = true
-        item.collect = (parseInt(item.collect) + parseInt(1)).toString()
       }
     }
+  },
+  created() {
+    const token = common.getToken()
+    const topTenReq = axios.create()
+    const id = common.getUserID()
+    topTenReq
+      .get(global.host + "topten", {
+        params: {
+          id
+        },
+        headers: {
+          token
+        }
+      })
+      .then(res => {
+        let result = res.data.data
+        for (let i = 0; i < result.length; i++) {
+          this.topTen.push(result[i])
+        }
+      })
   }
 }
 </script>

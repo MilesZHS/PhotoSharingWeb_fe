@@ -20,7 +20,7 @@
                   <el-tooltip
                     class="item"
                     effect="dark"
-                    :content="item.collect"
+                    :content="item.collect.toString()"
                     placement="bottom"
                   >
                     <span class="iconfont icon-tubiao_shoucang"></span>
@@ -34,10 +34,12 @@
                   <el-tooltip
                     class="item"
                     effect="dark"
-                    :content="item.download"
+                    :content="item.download.toString()"
                     placement="bottom"
                   >
-                    <span class="iconfont icon-tubiao_xiazai"></span>
+                    <a :href="downloadUrl" :class="{ active: item.isDownload }">
+                      <span class="iconfont icon-tubiao_xiazai"></span>
+                    </a>
                   </el-tooltip>
                 </div>
                 <div
@@ -48,10 +50,12 @@
                   <el-tooltip
                     class="item"
                     effect="dark"
-                    :content="item.like"
+                    :content="item.like.toString()"
                     placement="bottom"
                   >
-                    <span class="iconfont icon-tubiao_dianzan span-outline"></span>
+                    <span
+                      class="iconfont icon-tubiao_dianzan span-outline"
+                    ></span>
                   </el-tooltip>
                 </div>
               </div>
@@ -64,42 +68,15 @@
 </template>
 
 <script>
+import common from "../common/common.js"
+import global from "../common/global.js"
+import axios from "axios"
 export default {
   data() {
     return {
       screenWidth: "",
-      bannerList: [
-        {
-          id: "1",
-          imgUrl: require("../assets/image/DSC02318.jpg"),
-          collect: "20",
-          like: "20",
-          download: "30",
-          isCollect: false,
-          isLike: false,
-          isDownload: false
-        },
-        {
-          id: "2",
-          imgUrl: require("../assets/image/DSC02318.jpg"),
-          collect: "20",
-          like: "20",
-          download: "30",
-          isCollect: false,
-          isLike: false,
-          isDownload: false
-        },
-        {
-          id: "3",
-          imgUrl: require("../assets/image/DSC02318.jpg"),
-          collect: "20",
-          like: "20",
-          download: "30",
-          isCollect: false,
-          isLike: false,
-          isDownload: false
-        }
-      ]
+      bannerList: [],
+      downloadUrl: ""
     }
   },
   computed: {
@@ -112,31 +89,76 @@ export default {
   methods: {
     addCollect(item) {
       if (item.isCollect === true) {
-        item.collect = (parseInt(item.collect) - parseInt(1)).toString()
+        let res = common.cancelCollect(item.id)
+        res.then(result => {
+          item.collect = result
+        })
         item.isCollect = false
       } else {
-        item.collect = (parseInt(item.collect) + parseInt(1)).toString()
+        let res = common.addCollect(item.id)
+        res.then(result => {
+          item.collect = result
+        })
         item.isCollect = true
       }
     },
     addDownload(item) {
-      if (item.isDownload === true) {
-        item.download = (parseInt(item.download) - parseInt(1)).toString()
-        item.isDownload = false
-      } else {
-        item.download = (parseInt(item.download) + parseInt(1)).toString()
+      const name = item.imgUrl.split("/").pop()
+      const name1 = name.split("?").shift();
+      const a = item.imgUrl.split('?')
+      const newUrl = a[0]
+      this.downloadUrl = newUrl + "?attname=" + encodeURI(name1)
+      if (item.isDownload === false) {
+        let res = common.addDownload(item.id)
+        res.then(result => {
+          item.download = result
+        })
         item.isDownload = true
+      } else {
+        let res = common.addDownload(item.id)
+        res.then(result => {
+          item.download = result
+        })
       }
     },
     addLike(item) {
       if (item.isLike === true) {
-        item.like = (parseInt(item.like) - parseInt(1)).toString()
+        let res = common.cancelLike(item.id)
+        res.then(result => {
+          item.like = result
+        })
         item.isLike = false
       } else {
-        item.like = (parseInt(item.like) + parseInt(1)).toString()
+        let res = common.addLike(item.id)
+        res.then(result => {
+          item.like = result
+        })
         item.isLike = true
       }
     }
+  },
+  created() {
+    const token = common.getToken()
+    const id = common.getUserID()
+    const getBanner = axios.create()
+    getBanner
+      .get(global.host + "banner", {
+        params: {
+          id
+        },
+        headers: {
+          token
+        }
+      })
+      .then(res => {
+        let result = res.data.data
+        for (let i = 0; i < result.length; i++) {
+          this.bannerList.push(result[i])
+        }
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
   },
   mounted() {
     this.screenWidth = document.body.clientWidth
@@ -185,7 +207,7 @@ export default {
   background-color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
 }
-.span-outline::before{
+.span-outline::before {
   outline: none !important;
 }
 .active {

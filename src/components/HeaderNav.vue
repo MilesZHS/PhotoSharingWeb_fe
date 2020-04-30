@@ -111,6 +111,7 @@ nav ul {
   background-color: rgba(255, 255, 255, 0.8);
   margin-right: 1px;
   color: #999999;
+  vertical-align: middle;
 }
 #search-btn {
   border-top-right-radius: 15px;

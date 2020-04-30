@@ -190,7 +190,7 @@ export default {
   },
   methods: {
     verifySuccess() {
-      alert("登录中，请稍后...")
+      // this.$message('登录中，请稍后...')
       const loginReq = axios.create()
       loginReq
         .post(global.host + "login", {
@@ -204,7 +204,9 @@ export default {
           this.$router.push("/")
         })
         .catch(err => {
-          alert(err.response.data.message)
+          // this.$message.error(err.response.data.message)
+          console.log(err)
+          alert(err)
           this.pictureVerify = false
           this.resetForm("loginForm")
         })
@@ -252,11 +254,11 @@ export default {
               let userInfo = res["data"]["data"]
               alert(res["data"]["message"])
               localStorage.setItem("user", JSON.stringify(userInfo))
+              this.$router.push("/")
             })
             .catch(err => {
               alert(err.response.data.message)
             })
-          this.$router.push("/")
         } else {
           console.log("error submit!!")
           return false
@@ -284,7 +286,7 @@ export default {
               this.$router.push("/")
             })
             .catch(err => {
-              alert(err.response.data.message)
+              alert(err)
               this.slideVerify.show = false
               this.resetForm(formName)
             })

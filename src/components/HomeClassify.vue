@@ -1,34 +1,35 @@
 <template>
   <div>
     <div id="classify">
+      <!-- 左侧分类导航 -->
       <div id="classify-left">
         <ul>
           <li
-            v-for="(item, index) in classifyList"
-            :key="index"
+            v-for="(item, id) in classifyList.slice(0, 10)"
+            :key="id"
             @click="chooseClassifyItem(item)"
-            :class="{ classifyActive: classifyItemChoosed === item }"
+            :class="{ classifyActive: classifyItemChoosed === item.name }"
           >
-            {{ item }}
+            {{ item.name }}
           </li>
         </ul>
       </div>
+      <!-- 右侧图片展示 -->
       <div id="classify-right">
         <ul
           id="classify-waterfall"
           v-show="classifyItemChoosed === '' || classifyItemChoosed === '全部'"
         >
-          <li v-for="(item, id) in imgList" :key="id">
-            <img v-lazy="item.imgUrl" alt="" />
+          <li v-for="(item, id) in classifyList.slice(1)" :key="id">
+            <img v-lazy="item.front_cover" alt="" />
           </li>
         </ul>
-        <div v-for="(item, tagName) in classifyItemImgList" :key="tagName">
-          <ul
-            id="classify-waterfall"
-            v-if="item.tagName === classifyItemChoosed"
-          >
-            <li v-for="(imgItem, id) in item.imgList" :key="id">
-              <img v-lazy="imgItem.imgUrl" alt="" />
+        <!-- <div v-for="(item, id) in classifyItemImgList" :key="id"
+            v-if="item.tagName === classifyItemChoosed"> -->
+        <div v-if="classifyItemChoosed !== '全部'">
+          <ul id="classify-waterfall">
+            <li v-for="(item, id) in classifyItemImgList" :key="id">
+              <img v-lazy="item.imgUrl" alt="" />
             </li>
           </ul>
         </div>
@@ -39,47 +40,44 @@
 
 <script>
 import "../assets/css/animate.min.css"
+import common from "../common/common.js"
+import axios from "axios"
+import global from "../common/global.js"
 export default {
   data() {
     return {
       classifyItemChoosed: "",
       classifyList: [
-        "抗疫",
-        "风光",
-        "建筑",
-        "人像",
-        "卡通",
-        "艺术",
-        "设计",
-        "商务",
-        "节日",
-        "美食",
-        "动物",
-        "植物",
-        "全部"
-			],
-			//分类图片列表
-      classifyItemImgList: [
         {
-          tagName: "抗疫",
-          imgList: [
-            {
-              id: 1,
-              imgUrl: require("../assets/web/1.jpg")
-            }
-          ]
-        },
-        {
-          tagName: "风光",
-          imgList: [
-            {
-              id: 2,
-              imgUrl: require("../assets/web/2.jpg")
-            }
-          ]
+          id: "0",
+          name: "全部",
+          front_cover: "0",
+          create_time: "0",
+          imgNum: "9999"
         }
-			],
-			//全部分类图片列表
+      ],
+      //分类图片列表
+      classifyItemImgList: [
+        // {
+        //   tagName: "抗疫",
+        //   imgList: [
+        //     {
+        //       id: 1,
+        //       imgUrl: require("../assets/web/1.jpg")
+        //     }
+        //   ]
+        // },
+        // {
+        //   tagName: "风光",
+        //   imgList: [
+        //     {
+        //       id: 2,
+        //       imgUrl: require("../assets/web/2.jpg")
+        //     }
+        //   ]
+        // }
+      ],
+      //全部分类图片列表
       imgList: [
         {
           id: 1,
@@ -238,13 +236,66 @@ export default {
           imgUrl: require("../assets/web/20.jpg")
         }
       ],
-      tabName: "classify",
+      tabName: "classify"
     }
-	},
-	methods: {
+  },
+  methods: {
     chooseClassifyItem(item) {
-      this.classifyItemChoosed = item
+      this.classifyItemChoosed = item.name
+      const token = common.getToken()
+      const getItemList = axios.create()
+      getItemList
+        .get(global.host + "getclassifyitem", {
+          params: {
+            name: item.name
+          },
+          headers: {
+            token: token
+          }
+        })
+        .then(res => {
+          this.classifyItemImgList = []
+          let result = res["data"]["data"]
+          for (let i = 0; i < result.length; i++) {
+            this.classifyItemImgList.push(result[i])
+          }
+          console.log(this.classifyItemImgList)
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     }
+  },
+  created() {
+    const token = common.getToken()
+    const getTagListReq = axios.create()
+    getTagListReq
+      .get(global.host + "classifylist", {
+        params: {},
+        headers: {
+          token: token
+        }
+      })
+      .then(res => {
+        // this.classifyList.push(res.data.data)
+        let result = res.data.data
+        for (let i = 0; i < result.length; i++) {
+          if (result[i].name != "") {
+            this.classifyList.push(result[i])
+          }
+        }
+        //对分类数组按图片数量降序排序
+        this.classifyList.sort((a, b) => {
+          return b.imgNum - a.imgNum
+        })
+      })
+      .catch(err => {
+        this.$message({
+          message: err.response,
+          type: "error"
+        })
+        console.log(err)
+      })
   }
 }
 </script>
@@ -308,7 +359,7 @@ export default {
   cursor: pointer;
   transition: all 500ms;
 }
-#classify-waterfall li img:hover{
+#classify-waterfall li img:hover {
   transform: scale(1.5);
 }
 @media screen and (max-width: 768px) {
