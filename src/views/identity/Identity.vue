@@ -20,6 +20,15 @@
         </div>
         <div class="form-wrapper">
           <div id="login-form" v-show="isLogin">
+            <div class="picture-verify-container" v-if="pictureVerify">
+              <div class="picture-verify">
+                <Verify
+                  @success="verifySuccess()"
+                  @error="verifyError()"
+                  :type="1"
+                ></Verify>
+              </div>
+            </div>
             <div class="slide-verify-wrapper" v-if="slideVerify.show">
               <div class="slide-verify-close" @click="closeVerify()">
                 <i class="el-icon-close"></i>
@@ -83,11 +92,11 @@
               </el-form-item>
               <el-form-item label="生日" prop="birthday" required>
                 <el-date-picker
-                  type="date"
-                  placeholder="选择日期"
                   v-model="regForm.birthday"
-                  style="width: 100%;"
-                ></el-date-picker>
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd"
+                >
+                </el-date-picker>
               </el-form-item>
               <el-form-item label="性别" prop="gender">
                 <el-radio-group v-model="regForm.gender">
@@ -110,7 +119,13 @@
 </template>
 
 <script>
+import global from "../../common/global.js"
+import axios from "axios"
+import Verify from "vue2-verify"
 export default {
+  components: {
+    Verify
+  },
   data() {
     var validatePass = (rule, value, callback) => {
       if (value === "") {
@@ -125,6 +140,8 @@ export default {
       isActived: true,
       isLogin: true,
       screenHeight: "",
+      screenWidth: "",
+      pictureVerify: false,
       labelPosition: "left",
       loginForm: {
         username: "",
@@ -156,7 +173,6 @@ export default {
         ],
         birthday: [
           {
-            type: "date",
             required: true,
             message: "请选择日期",
             trigger: "change"
@@ -172,6 +188,29 @@ export default {
     }
   },
   methods: {
+    verifySuccess() {
+      // this.$message('登录中，请稍后...')
+      const loginReq = axios.create()
+      loginReq
+        .post(global.host + "login", {
+          username: this.loginForm.username,
+          password: this.loginForm.password
+        })
+        .then(res => {
+          let userInfo = res["data"]["data"]
+          // alert(res.data.message)
+          localStorage.setItem("user", JSON.stringify(userInfo))
+          this.$router.push("/")
+        })
+        .catch(err => {
+          this.$message.error(err.response)
+          this.pictureVerify = false
+          this.resetForm("loginForm")
+        })
+    },
+    verifyError() {
+      alert("验证码错误，请重新输入")
+    },
     changeToReg: function() {
       this.isLogin = false
       this.isActived = false
@@ -180,13 +219,43 @@ export default {
       this.isLogin = true
       this.isActived = true
     },
-    submitForm() {
-      this.slideVerify.show = true
-    },
-    submitRegForm(formName) {
+    submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!")
+          // alert("submit!")
+          console.log(this.screenWidth)
+          if (this.screenWidth >= 768) {
+            this.slideVerify.show = true
+          } else {
+            this.pictureVerify = true
+          }
+        } else {
+          console.log("error submit!!")
+          return false
+        }
+      })
+    },
+    submitRegForm(formName) {
+      console.log(this.regForm.birthday)
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          const regReq = axios.create()
+          regReq
+            .post(global.host + "register", {
+              username: this.regForm.username,
+              password: this.regForm.password,
+              birthday: this.regForm.birthday,
+              gender: this.regForm.gender
+            })
+            .then(res => {
+              let userInfo = res["data"]["data"]
+              alert(res["data"]["message"])
+              localStorage.setItem("user", JSON.stringify(userInfo))
+              this.$router.push("/")
+            })
+            .catch(err => {
+              alert(err.response.data.message)
+            })
         } else {
           console.log("error submit!!")
           return false
@@ -200,15 +269,31 @@ export default {
     onSuccess(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!")
+          // alert("submit!")
+          const loginReq = axios.create()
+          loginReq
+            .post(global.host + "login", {
+              username: this.loginForm.username,
+              password: this.loginForm.password
+            })
+            .then(res => {
+              let userInfo = res["data"]["data"]
+              this.$message({
+                message: res.data.message
+              })
+              localStorage.setItem("user", JSON.stringify(userInfo))
+              this.$router.push("/")
+            })
+            .catch(err => {
+              this.$message.error(err.response.data.message)
+              this.slideVerify.show = false
+              this.resetForm(formName)
+            })
         } else {
           console.log("error submit!!")
           return false
         }
       })
-      setTimeout(() => {
-        this.slideVerify.show = false
-      }, 2000)
     },
     onFail() {
       console.log("验证不通过")
@@ -236,8 +321,10 @@ export default {
   },
   mounted() {
     this.screenHeight = window.innerHeight
+    this.screenWidth = window.innerWidth
     window.onresize = () => {
       this.screenHeight = window.innerHeight
+      this.screenWidth = window.innerWidth
     }
   }
 }
@@ -282,7 +369,8 @@ export default {
   display: inline-block;
   cursor: pointer;
 }
-#login-form,#reg-form {
+#login-form,
+#reg-form {
   width: 60%;
   margin: 50px auto;
 }
@@ -336,7 +424,8 @@ export default {
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   }
-  #login-form,#reg-form {
+  #login-form,
+  #reg-form {
     width: 80%;
     margin: 50px auto;
   }
@@ -352,6 +441,22 @@ export default {
     z-index: 998;
     padding-top: 18px;
     border-radius: 12px;
+  }
+  .picture-verify-container {
+    position: fixed;
+    width: 300px;
+    height: 200px;
+    z-index: 9999999;
+    top: 50%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -150px;
+    background-color: white;
+  }
+  .picture-verify {
+    width: 202px;
+    height: 140px;
+    margin: 30px auto;
   }
 }
 </style>

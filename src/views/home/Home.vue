@@ -2,170 +2,233 @@
   <div>
     <header-nav>
       <div id="identity-wrapper" v-if="isLogin">
-        <div id="avatar-wrapper">
-          <img :src="avatar" id="avatar" alt="" />
-        </div>
-        <div id="username">
-          {{ userName }}
-        </div>
+        <router-link to="/user">
+          <div id="avatar-wrapper">
+            <img :src="avatar" id="avatar" alt="" />
+          </div>
+          <div id="username">
+            {{ userName }}
+          </div>
+        </router-link>
       </div>
     </header-nav>
-    <section id="carousel">
-      <div class="block">
-        <el-carousel :height="carouselHeight + 'px'" :interval="5000">
-          <el-carousel-item v-for="(item, id) in bannerList" :key="id">
-            <img
-              :src="item.imgUrl"
-              alt=""
-              :height="carouselHeight"
-              class="carousel-img"
-            />
-            <div class="mask">
-              <div class="icon-content">
-                <div
-                  id="liulan"
-                  :class="{ active: item.isBrowse }"
-                  @click="addBrowse(item)"
-                >
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="item.browse"
-                    placement="bottom"
-                  >
-                    <span class="iconfont icon-tubiao_liulan"></span>
-                  </el-tooltip>
-                </div>
-                <div
-                  id="download"
-                  :class="{ active: item.isDownload }"
-                  @click="addDownload(item)"
-                >
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="item.download"
-                    placement="bottom"
-                  >
-                    <span class="iconfont icon-tubiao_xiazai"></span>
-                  </el-tooltip>
-                </div>
-                <div
-                  id="dianzan"
-                  :class="{ active: item.isLike }"
-                  @click="addLike(item)"
-                >
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="item.like"
-                    placement="bottom"
-                  >
-                    <span class="iconfont icon-tubiao_dianzan"></span>
-                  </el-tooltip>
-                </div>
-              </div>
-            </div>
-          </el-carousel-item>
-        </el-carousel>
+    <home-carousel></home-carousel>
+    <section class="main">
+      <div class="tab-container">
+        <ul>
+          <li
+            :class="{ liActive: tabName === 'classify' }"
+            @click="tabName = 'classify'"
+          >
+            <span :class="{ liSpanActive: tabName === 'classify' }"
+              >专题分类</span
+            >
+          </li>
+          <li
+            :class="{ liActive: tabName === 'top-ten' }"
+            @click="tabName = 'top-ten'"
+          >
+            <span :class="{ liSpanActive: tabName === 'top-ten' }"
+              >点赞&nbsp;top&nbsp;10</span
+            >
+          </li>
+          <li
+            :class="{ liActive: tabName === 'new-upload' }"
+            @click="tabName = 'new-upload'"
+          >
+            <span :class="{ liSpanActive: tabName === 'new-upload' }"
+              >最新上传</span
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="content">
+        <transition enter-active-class="animated fadeIn">
+          <home-classify v-if="tabName === 'classify'"></home-classify>
+        </transition>
+        <transition enter-active-class="animated fadeIn">
+          <top-ten v-if="tabName === 'top-ten'"></top-ten>
+        </transition>
+        <transition enter-active-class="animated fadeIn">
+          <new-upload v-if="tabName === 'new-upload'"></new-upload>
+        </transition>
       </div>
     </section>
-    <footer></footer>
+    <section class="clear"></section>
+    <div id="aside-btn">
+      <div id="goto-top-btn" @click="gotoTop()">
+        <span class="iconfont icon-shangla"></span>
+      </div>
+      <div id="upload-btn" @click="showDialog()">
+        <span class="iconfont icon-shangchuan"></span>
+      </div>
+      <div id="logout-btn" @click="logout()">
+        <span class="iconfont icon-tuichu"></span>
+      </div>
+    </div>
+    <image-uploader
+      :userId="userId"
+      :classifyList="classifyList"
+      v-if="showUploadForm"
+    ></image-uploader>
+    <page-footer></page-footer>
   </div>
 </template>
 
 <script>
 import HeaderNav from "../../components/HeaderNav.vue"
+import HomeCarousel from "../../components/HomeCarousel.vue"
+import "../../assets/css/animate.min.css"
+import HomeClassify from "../../components/HomeClassify.vue"
+import TopTen from "../../components/TopTen.vue"
+import NewUpload from "../../components/NewUpload.vue"
+import PageFooter from "../../components/PageFooter.vue"
+import ImageUploader from "../../components/ImageUploader"
+import event from "../../common/Event.js"
+import axios from "axios"
+import global from "../../common/global.js"
+import common from "../../common/common.js"
 export default {
   components: {
-    HeaderNav
+    HeaderNav,
+    HomeCarousel,
+    HomeClassify,
+    TopTen,
+    NewUpload,
+    PageFooter,
+    ImageUploader
   },
   data() {
     return {
+      tabName: "classify",
+      imgUrl: "",
       isLogin: false,
-      userName: "18560677018",
-      avatar: require("../../assets/logo.png"),
-      screenWidth: "",
-      bannerList: [
-        {
-          id: "1",
-          imgUrl: require("../../assets/image/DSC02318.jpg"),
-          browse: "20",
-          like: "20",
-          download: "30",
-          isBrowse: false,
-          isLike: false,
-          isDownload: false
-        },
-        {
-          id: "2",
-          imgUrl: require("../../assets/image/DSC02318.jpg"),
-          browse: "20",
-          like: "20",
-          download: "30",
-          isBrowse: false,
-          isLike: false,
-          isDownload: false
-        },
-        {
-          id: "3",
-          imgUrl: require("../../assets/image/DSC02318.jpg"),
-          browse: "20",
-          like: "20",
-          download: "30",
-          isBrowse: false,
-          isLike: false,
-          isDownload: false
-        }
-      ]
-    }
-  },
-  computed: {
-    // eslint-disable-next-line vue/return-in-computed-property
-    carouselHeight: function() {
-      console.log(this.screenWidth)
-      return this.screenWidth > 768 ? "800" : "300"
+      userName: "",
+      userId: "",
+      avatar: "",
+      showUploadForm: false,
+      classifyList: []
     }
   },
   methods: {
-    addBrowse(item) {
-      if (item.isBrowse === true) {
-        item.browse = (parseInt(item.browse) - parseInt(1)).toString()
-        item.isBrowse = false
-      } else {
-        item.browse = (parseInt(item.browse) + parseInt(1)).toString()
-        item.isBrowse = true
-      }
+    gotoTop() {
+      window.scrollTo(0, 0)
     },
-    addDownload(item) {
-      if (item.isDownload === true) {
-        item.download = (parseInt(item.download) - parseInt(1)).toString()
-        item.isDownload = false
-      } else {
-        item.download = (parseInt(item.download) + parseInt(1)).toString()
-        item.isDownload = true
-      }
+    changeLoginStatus(id) {
+      this.isLogin = true
+      this.userId = id
+      let userInfo = localStorage.getItem(id)
+      userInfo = JSON.parse(userInfo)
+      this.userName = userInfo.username
+      this.avatar = userInfo.avatar
     },
-    addLike(item) {
-      if (item.isLike === true) {
-        item.like = (parseInt(item.like) - parseInt(1)).toString()
-        item.isLike = false
-      } else {
-        item.like = (parseInt(item.like) + parseInt(1)).toString()
-        item.isLike = true
-      }
+    logout() {
+      localStorage.removeItem("user")
+      this.$router.push("/identity")
+    },
+    showDialog() {
+      const token = JSON.parse(localStorage.getItem("user"))["token"]
+      const id = common.getUserID()
+      const getUploadToken = axios.create()
+      getUploadToken
+        .post(
+          global.host + "uploadtoken",
+          { id },
+          {
+            headers: {
+              token: token
+            }
+          }
+        )
+        .then(() => {
+          this.showUploadForm = true
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.$message.error(err.response.data.message)
+        })
+    },
+    closeDialog(flag) {
+      this.showUploadForm = flag
     }
   },
-  mounted() {
-    this.screenWidth = document.body.clientWidth
-    window.onresize = () => {
-      this.screenWidth = document.body.clientWidth
+  created() {
+    const user = JSON.parse(localStorage.getItem("user"))
+    if (user == null) {
+      this.$router.push("/identity")
+    } else {
+      this.isLogin = true
+      this.userId = user.id
+      this.userName = user.username
+      this.avatar = user.avatar
     }
+    const token = JSON.parse(localStorage.getItem("user"))["token"]
+    const getTags = axios.create()
+    getTags
+      .get(global.host + "classifylist", {
+        params: {},
+        headers: {
+          token: token
+        }
+      })
+      .then(res => {
+        this.classifyList = res.data.data
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
+  },
+  mounted() {
+    this.screenWidth = window.innerWidth
+    window.onresize = () => {
+      this.screenWidth = window.innerWidth
+    }
+    event.$on("closeDialog", this.closeDialog)
+  },
+  beforeDestroy() {
+    event.$off("closeDialog", this.closeDialog)
   }
 }
 </script>
 
 <style scoped>
+.clear {
+  clear: both;
+}
+.main {
+  width: 100%;
+}
+.tab-container {
+  width: 44%;
+  margin: 30px auto;
+  display: block;
+  text-align: center;
+}
+.tab-container ul {
+  display: flex;
+  justify-content: space-around;
+}
+.tab-container ul li {
+  width: 25%;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  display: inline-block;
+  color: #b9b1be;
+  cursor: pointer;
+  font-size: 20px;
+}
+.liActive {
+  color: black !important;
+  font-size: 24px !important;
+  font-weight: 600;
+}
+.liSpanActive {
+  border-bottom: 4px solid #ff1b89;
+}
+.content {
+  width: 100%;
+}
 #identity-wrapper {
   width: 100%;
   height: 60px;
@@ -192,67 +255,69 @@ export default {
   padding-left: 10px;
   color: white;
 }
-
-.carousel-img {
-  width: 100%;
-  object-fit: cover;
-}
-.swiper-container {
-  --swiper-theme-color: white; /* 设置Swiper风格 */
-  --swiper-navigation-color: white; /* 单独设置按钮颜色 */
-  --swiper-navigation-size: 30px; /* 设置按钮大小 */
-}
-#carousel {
-  margin-top: -80px;
-}
-.mask {
-  width: 140px;
-  height: 40px;
-  line-height: 40px;
+#aside-btn {
+  width: 48px;
+  height: 172px;
   position: fixed;
-  top: 760px;
-  right: 4%;
-  z-index: 999;
+  top: 60%;
+  right: 1%;
+  z-index: 999999;
 }
-.mask .icon-content {
-  display: flex;
-  height: 40px;
-  line-height: 40px;
-  justify-content: space-around;
-}
-.mask .icon-content div {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
+#goto-top-btn {
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.6);
+  height: 48px;
+  width: 48px;
+  line-height: 48px;
+  text-align: center;
+  color: white;
+  background-color: #ff1b89;
   cursor: pointer;
 }
-.active {
-  background-color: rgb(255, 27, 137) !important;
+#upload-btn {
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+  line-height: 48px;
+  text-align: center;
   color: white;
+  background-color: #ff1b89;
+  cursor: pointer;
+  margin-top: 14px;
+}
+#logout-btn {
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+  line-height: 48px;
+  text-align: center;
+  color: white;
+  background-color: #ff1b89;
+  cursor: pointer;
+  margin-top: 14px;
+}
+@media screen and (max-width: 1200px) {
+  .tab-container {
+    width: 60%;
+  }
 }
 @media screen and (max-width: 768px) {
-  #carousel {
-    margin-top: 0;
-  }
-  .swiper-container {
-    --swiper-theme-color: #ff1b89; /* 设置Swiper风格 */
-    --swiper-navigation-color: #ff1b89; /* 单独设置按钮颜色 */
-    --swiper-navigation-size: 30px; /* 设置按钮大小 */
-  }
   #username {
     color: #848484;
   }
-  .mask {
-    width: 120px;
-    height: 36px;
-    position: fixed;
-    z-index: 999;
-    top: 264px;
-    right: 2%;
+  .tab-container {
+    width: 90%;
+  }
+  .tab-container ul li {
+    width: 30%;
+    font-size: 14px;
+  }
+  .liActive {
+    color: black !important;
+    font-size: 16px !important;
+    font-weight: 600;
+  }
+  .liSpanActive {
+    border-bottom: 4px solid #ff1b89;
   }
 }
 </style>

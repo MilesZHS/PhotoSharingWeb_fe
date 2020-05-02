@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "7055649",
+      "name": "退出",
+      "font_class": "tuichu",
+      "unicode": "e72e",
+      "unicode_decimal": 59182
+    },
+    {
+      "icon_id": "4425828",
+      "name": "上拉",
+      "font_class": "shangla",
+      "unicode": "e797",
+      "unicode_decimal": 59287
+    },
+    {
+      "icon_id": "1287327",
+      "name": "图标_收藏",
+      "font_class": "tubiao_shoucang",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
       "icon_id": "1287330",
       "name": "图标_下载",
       "font_class": "tubiao_xiazai",
