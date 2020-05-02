@@ -32,7 +32,7 @@ function getUserID() {
 }
 
 //点赞
-function addLike(id) {
+function addLike(id,ori_user_id) {
   const token = getToken();
   const user_id = getUserID();
   const addLike = Axios.create();
@@ -42,6 +42,7 @@ function addLike(id) {
       {
         id,
         user_id,
+        ori_user_id
       },
       {
         headers: {

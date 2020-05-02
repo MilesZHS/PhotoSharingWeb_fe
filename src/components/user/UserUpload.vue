@@ -71,7 +71,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
-            :page-sizes="[1, 10, 50, 100]"
+            :page-sizes="[5, 10, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="totalPages"
@@ -143,43 +143,26 @@
 </template>
 
 <script>
+import common from '../../common/common.js'
+import global from '../../common/global.js'
+import axios from 'axios'
 export default {
   data() {
     return {
       currentPage: 1, //当前页码
-      pageSize: 1, //一页展示几条数据
+      pageSize: 5, //一页展示几条数据
       uploadTableData: [
-        {
-          name: "vuex",
-          create_time: "2020-04-24",
-          zipUrl: require("../../assets/logo.png"),
-          imgUrl: require("../../assets/logo.png"),
-          download: "11",
-          like: "1",
-          collect: "10",
-          homeShow: true,
-          tags: ["抗疫", "风光", "建筑", "人像"]
-        },
-        {
-          name: "vuex",
-          create_time: "2020-04-24",
-          zipUrl: require("../../assets/logo.png"),
-          download: "22",
-          like: "1",
-          collect: "10",
-          homeShow: true,
-          tags: ["抗疫", "风光", "建筑", "人像"]
-        },
-        {
-          name: "vuex",
-          create_time: "2020-04-24",
-          zipUrl: require("../../assets/logo.png"),
-          download: "33",
-          like: "1",
-          collect: "10",
-          homeShow: true,
-          tags: ["抗疫", "风光", "建筑", "人像"]
-        }
+        // {
+        //   name: "vuex",
+        //   create_time: "2020-04-24",
+        //   zipUrl: require("../../assets/logo.png"),
+        //   imgUrl: require("../../assets/logo.png"),
+        //   download: "11",
+        //   like: "1",
+        //   collect: "10",
+        //   homeShow: true,
+        //   tags: ["抗疫", "风光", "建筑", "人像"]
+        // },
       ],
       fit: "cover", //el-avatar适应容器选项,
       screenWidth: "",
@@ -254,18 +237,35 @@ export default {
   },
   computed: {
     totalPages() {
-      return parseInt(
-        this.uploadTableData.length % this.pageSize === 0
-          ? this.uploadTableData.length / this.pageSize
-          : this.uploadTableData.length / this.pageSize + 1
-      )
-    }
+      return this.uploadTableData.length
+    },
   },
   mounted() {
     this.screenWidth = window.innerWidth
     window.onresize = () => {
       this.screenWidth = window.innerWidth
     }
+  },
+  created(){
+    const token = common.getToken()
+    const id = common.getUserID()
+    const getUploadRecord = axios.create()
+    getUploadRecord.get(global.host + 'uploadrecord',{
+      params: {
+        id
+      },
+      headers: {
+        token
+      }
+    }).then(res => {
+      // let result = res.data.data
+      this.uploadTableData = res.data.data
+      for(let i = 0 ; i < this.uploadTableData.length ; i++){
+        this.uploadTableData[i].homeShow  = this.uploadTableData[i].homeShow === 1 ? true : false
+      }
+    }).catch(err => {
+      console.log(err.response)
+    })
   }
 }
 </script>

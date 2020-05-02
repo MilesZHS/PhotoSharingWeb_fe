@@ -4,10 +4,10 @@
       <div id="identity-wrapper" v-if="isLogin">
         <router-link to="/user">
           <div id="avatar-wrapper">
-            <img :src="avatar" id="avatar" alt="" />
+            <img :src="userInfo.avatar" id="avatar" alt="" />
           </div>
           <div id="username">
-            {{ userName }}
+            {{ userInfo.username }}
           </div>
         </router-link>
       </div>
@@ -15,12 +15,13 @@
     <section>
       <div class="user">
         <div class="userinfo-container">
-          <h3>我的信息 &nbsp;&nbsp;<span>修改</span></h3>
+          <h3>我的信息 &nbsp;&nbsp;<span @click="updateUserInfo()">修改</span></h3>
           <div class="user-avatar">
             <div id="avatar-component">
-              <avatar-upload></avatar-upload>
+              <avatar-upload :avatar="userInfo.avatar"></avatar-upload>
+              <!-- <img :src="userInfo.avatar" alt=""> -->
             </div>
-            <span>头像上传</span>
+            <!-- <span>头像上传</span> -->
           </div>
           <div class="user-info">
             <table>
@@ -38,7 +39,7 @@
               </tr>
               <tr>
                 <td>收到的赞:</td>
-                <td>{{ userInfo.likeNum }}</td>
+                <td>{{ userInfo.likedNum }}</td>
               </tr>
               <tr>
                 <td>上传数量:</td>
@@ -177,6 +178,10 @@ import UserDownload from "../../components/user/UserDownload.vue"
 import UserLike from "../../components/user/UserLike.vue"
 import UserCollect from '../../components/user/UserCollect.vue'
 import UserLiked from '../../components/user/UserLiked.vue'
+import axios from 'axios'
+import global from '../../common/global.js'
+import common from '../../common/common.js'
+import event from '../../common/Event.js'
 export default {
   components: {
     HeaderNav,
@@ -197,16 +202,18 @@ export default {
       isLogin: true,
       userName: "18560677018",
       avatar: require("../../assets/logo.png"),
-      userInfo: {
-        username: "张珅",
-        gender: "男",
-        birthday: "1999-06-08",
-        uploadNum: "100",
-        downloadNum: "200",
-        likeNum: "20",
-        collectNum: "80",
-        avatarUrl: require("../../assets/logo.png")
-      }
+      userInfo: {},
+      showUpdateForm: false
+      // {
+      //   username: "张珅",
+      //   gender: "男",
+      //   birthday: "1999-06-08",
+      //   uploadNum: "100",
+      //   downloadNum: "200",
+      //   likeNum: "20",
+      //   collectNum: "80",
+      //   avatarUrl: require("../../assets/logo.png")
+      // }
     }
   },
   methods: {
@@ -218,7 +225,34 @@ export default {
     },
     changeTabName(item) {
       this.isTabName = item
+    },
+    updateUserInfo(){
+    },
+    changedAvatar(url){
+      this.userInfo.avatar = url
+      console.log('url--'+ url)
     }
+  },
+  created(){
+    const token = common.getToken()
+    const id = common.getUserID()
+    const getInfoReq = axios.create()
+    getInfoReq.get(global.host + 'userinfo',{
+      params: {
+        id
+      },
+      headers: {
+        token
+      }
+    }).then(res => {
+      this.userInfo = res.data.data
+    })
+  },
+  mounted(){
+    event.$on('changedAvatar',this.changedAvatar)
+  },
+  beforeDestroy(){
+    event.$off('changedAvatar',this.changedAvatar)
   }
 }
 </script>

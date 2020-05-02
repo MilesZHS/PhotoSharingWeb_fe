@@ -92,11 +92,11 @@
               </el-form-item>
               <el-form-item label="生日" prop="birthday" required>
                 <el-date-picker
-                  type="date"
-                  placeholder="选择日期"
                   v-model="regForm.birthday"
-                  style="width: 100%;"
-                ></el-date-picker>
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd"
+                >
+                </el-date-picker>
               </el-form-item>
               <el-form-item label="性别" prop="gender">
                 <el-radio-group v-model="regForm.gender">
@@ -173,7 +173,6 @@ export default {
         ],
         birthday: [
           {
-            type: "date",
             required: true,
             message: "请选择日期",
             trigger: "change"
@@ -199,14 +198,12 @@ export default {
         })
         .then(res => {
           let userInfo = res["data"]["data"]
-          alert(res.data.message)
+          // alert(res.data.message)
           localStorage.setItem("user", JSON.stringify(userInfo))
           this.$router.push("/")
         })
         .catch(err => {
-          // this.$message.error(err.response.data.message)
-          console.log(err)
-          alert(err)
+          this.$message.error(err.response)
           this.pictureVerify = false
           this.resetForm("loginForm")
         })
@@ -239,9 +236,9 @@ export default {
       })
     },
     submitRegForm(formName) {
+      console.log(this.regForm.birthday)
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // alert("submit!")
           const regReq = axios.create()
           regReq
             .post(global.host + "register", {
@@ -281,12 +278,14 @@ export default {
             })
             .then(res => {
               let userInfo = res["data"]["data"]
-              alert(res.data.message)
+              this.$message({
+                message: res.data.message
+              })
               localStorage.setItem("user", JSON.stringify(userInfo))
               this.$router.push("/")
             })
             .catch(err => {
-              alert(err)
+              this.$message.error(err.response.data.message)
               this.slideVerify.show = false
               this.resetForm(formName)
             })

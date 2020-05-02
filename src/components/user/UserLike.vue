@@ -1,22 +1,31 @@
 <template>
   <div class="like">
-    <waterfall :line-gap="290" :watch="imgArr" :align="waterfallAlign" :fixed-height="false">
+    <waterfall
+      :line-gap="290"
+      :watch="imgArr"
+      :align="waterfallAlign"
+      :fixed-height="false"
+    >
       <!-- each component is wrapped by a waterfall slot -->
       <waterfall-slot
         v-for="(item, index) in imgArr"
         :width="item.width"
         :height="parseInt(item.height) + 200"
         :order="index"
-        :key="item.id"
+        :key="index"
       >
-        <div class="img-wrapper">
+        <div class="img-wrapper" >
           <img :src="item.imgUrl" width="280px" alt="" />
           <div class="content">
             <div class="img-name">
               <ul>
-								<li><h4>{{item.name}}</h4></li>
-								<li><span>{{item.create_time}}</span></li>
-							</ul>
+                <li>
+                  <h4>{{ item.name }}</h4>
+                </li>
+                <li>
+                  <span>{{ item.create_time }}</span>
+                </li>
+              </ul>
             </div>
             <div class="img-btn">
               <div
@@ -29,7 +38,7 @@
               <span>{{ item.collect }}</span>
               <div
                 class="like-btn"
-                @click="likeClick(item,index)"
+                @click="likeClick(item, index)"
                 :class="{ btnActive: item.isLike }"
               >
                 <span class="iconfont icon-tubiao_dianzan"></span>
@@ -40,7 +49,9 @@
                 @click="downloadClick(item)"
                 :class="{ btnActive: item.isDownload }"
               >
-                <span class="iconfont icon-tubiao_xiazai"></span>
+                <a :href="downloadUrl" :class="{ btnActive: item.isDownload }">
+                  <span class="iconfont icon-tubiao_xiazai"></span>
+                </a>
               </div>
               <span>{{ item.download }}</span>
             </div>
@@ -54,6 +65,9 @@
 <script scoped>
 import Waterfall from "vue-waterfall/lib/waterfall"
 import WaterfallSlot from "vue-waterfall/lib/waterfall-slot"
+import common from "../../common/common.js"
+import global from "../../common/global.js"
+import axios from "axios"
 export default {
   components: {
     Waterfall,
@@ -63,377 +77,87 @@ export default {
     return {
       waterfallAlign: "center",
       imgArr: [
-        {
-          id: 1,
-          width: "640",
-          height: "373",
-          imgUrl: require("../../assets/web/1.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx",
-          create_time: "2020-04-24"
-        },
-        {
-          id: 2,
-          width: "640",
-          height: "427",
-          imgUrl: require("../../assets/web/2.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 4,
-          width: "640",
-          height: "456",
-          imgUrl: require("../../assets/web/4.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 5,
-          width: "640",
-          height: "426",
-          imgUrl: require("../../assets/web/5.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 6,
-          width: "640",
-          height: "360",
-          imgUrl: require("../../assets/web/6.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 7,
-          width: "640",
-          height: "319",
-          imgUrl: require("../../assets/web/7.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 8,
-          width: "640",
-          height: "480",
-          imgUrl: require("../../assets/web/8.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 9,
-          width: "640",
-          height: "338",
-          imgUrl: require("../../assets/web/9.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 10,
-          width: "640",
-          height: "320",
-          imgUrl: require("../../assets/web/10.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 11,
-          width: "640",
-          height: "640",
-          imgUrl: require("../../assets/web/11.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 13,
-          width: "640",
-          height: "265",
-          imgUrl: require("../../assets/web/13.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 15,
-          width: "640",
-          height: "452",
-          imgUrl: require("../../assets/web/15.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 16,
-          width: "640",
-          height: "384",
-          imgUrl: require("../../assets/web/16.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 17,
-          width: "640",
-          height: "426",
-          imgUrl: require("../../assets/web/17.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 18,
-          width: "640",
-          height: "445",
-          imgUrl: require("../../assets/web/18.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 19,
-          width: "640",
-          height: "395",
-          imgUrl: require("../../assets/web/19.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 20,
-          width: "640",
-          height: "426",
-          imgUrl: require("../../assets/web/20.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 21,
-          width: "640",
-          height: "320",
-          imgUrl: require("../../assets/web/10.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 22,
-          width: "640",
-          height: "640",
-          imgUrl: require("../../assets/web/11.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 23,
-          width: "640",
-          height: "265",
-          imgUrl: require("../../assets/web/13.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 24,
-          width: "640",
-          height: "452",
-          imgUrl: require("../../assets/web/15.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 25,
-          width: "640",
-          height: "384",
-          imgUrl: require("../../assets/web/16.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 26,
-          width: "640",
-          height: "426",
-          imgUrl: require("../../assets/web/17.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 27,
-          width: "640",
-          height: "445",
-          imgUrl: require("../../assets/web/18.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 28,
-          width: "640",
-          height: "395",
-          imgUrl: require("../../assets/web/19.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        },
-        {
-          id: 29,
-          width: "640",
-          height: "426",
-          imgUrl: require("../../assets/web/20.jpg"),
-          collect: "111",
-          like: "111",
-          download: "111",
-          isCollect: false,
-          isLike: true,
-          isDownload: false,
-          name: "xxx"
-        }
-      ]
+      ],
+      downloadUrl: ''
     }
   },
   methods: {
     collectClick(item) {
-      if (item.isCollect === false) {
-        item.isCollect = true
-        item.collect = parseInt(parseInt(item.collect) + 1).toString()
-      } else {
+      if (item.isCollect === true) {
+        let res = common.cancelCollect(item.id)
+        res.then(result => {
+          item.collect = result
+        })
         item.isCollect = false
-        item.collect = parseInt(parseInt(item.collect) - 1).toString()
+      } else {
+        let res = common.addCollect(item.id)
+        res.then(result => {
+          item.collect = result
+        })
+        item.isCollect = true
       }
     },
     likeClick(item,index) {
-      if (item.isLike === false) {
-        item.isLike = true
-				item.like = parseInt(parseInt(item.like) + 1).toString()
-      } else {
+      if (item.isLike === true) {
         item.isLike = false
-				item.like = parseInt(parseInt(item.like) - 1).toString()
-				this.imgArr.splice(index,1)
+        let res = common.cancelLike(item.id)
+        res.then(result => {
+          item.like = result
+          // console.log(item.like)
+        })
+        this.imgArr.splice(index,1)
+        // item.like = (parseInt(item.like) - parseInt(1)).toString()
+      } else {
+        item.isLike = true
+        let res = common.addLike(item.id, item.user_id)
+        res.then(result => {
+          item.like = result
+          // console.log(item.like)
+        })
       }
     },
     downloadClick(item) {
+      const name = item.imgUrl.split("/").pop()
+      const name1 = name.split("?").shift()
+      const a = item.imgUrl.split("?")
+      const newUrl = a[0]
+      this.downloadUrl = newUrl + "?attname=" + encodeURI(name1)
       if (item.isDownload === false) {
+        let res = common.addDownload(item.id)
+        res.then(result => {
+          item.download = result
+        })
         item.isDownload = true
-        item.download = parseInt(parseInt(item.download) + 1).toString()
       } else {
-        item.isDownload = false
-        item.download = parseInt(parseInt(item.download) - 1).toString()
+        let res = common.addDownload(item.id)
+        res.then(result => {
+          item.download = result
+        })
       }
     }
+  },
+  created() {
+    const token = common.getToken()
+    const id = common.getUserID()
+    const req = axios.create()
+    req
+      .get(global.host + "likerecord", {
+        params: {
+          id
+        },
+        headers: {
+          token
+        }
+      })
+      .then(res => {
+        this.imgArr = res.data.data
+        for (let i = 0; i < this.imgArr.length; i++) {
+          this.imgArr[i].create_time = this.imgArr[i].create_time.split(" ")[0]
+        }
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
   }
 }
 </script>
@@ -443,32 +167,32 @@ export default {
   width: 90%;
   margin: 20px auto;
 }
-.img-wrapper{
-	box-shadow: 0 0 4px #c4c4c4;
-	width: 280px;
+.img-wrapper {
+  box-shadow: 0 0 4px #c4c4c4;
+  width: 280px;
 }
-.img-name ul{
-	list-style: none;
-	width: 90%;
-	margin: 0% auto;
+.img-name ul {
+  list-style: none;
+  width: 90%;
+  margin: 0% auto;
 }
-.img-name ul li{
-	display: inline-block;
-	vertical-align: baseline;
-	width: 50%;
+.img-name ul li {
+  display: inline-block;
+  vertical-align: baseline;
+  width: 50%;
 }
-.img-name ul li:first-child{
-	font-size: 20px;
+.img-name ul li:first-child {
+  font-size: 20px;
 }
-.img-name ul li:last-child{
-	text-align: right;
-	vertical-align: baseline;
+.img-name ul li:last-child {
+  text-align: right;
+  vertical-align: baseline;
 }
 .img-btn {
   display: block;
-	text-align: right;
-	margin-right: 20px;
-	padding-bottom: 8px;
+  text-align: right;
+  margin-right: 20px;
+  padding-bottom: 8px;
 }
 .img-btn div {
   display: inline-block;
@@ -478,13 +202,13 @@ export default {
   text-align: center;
   border-radius: 50%;
   box-shadow: 0 0 4px #848484;
-	margin-top: 8px;
-	margin-right: 2px;
-	margin-left: 8px;
-	cursor: pointer;
+  margin-top: 8px;
+  margin-right: 2px;
+  margin-left: 8px;
+  cursor: pointer;
 }
-.btnActive{
-	background-color: #ff1b89;
-	color: white;
+.btnActive {
+  background-color: #ff1b89;
+  color: white;
 }
 </style>

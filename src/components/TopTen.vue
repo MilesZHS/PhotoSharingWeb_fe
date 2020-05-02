@@ -82,7 +82,7 @@ export default {
         // item.like = (parseInt(item.like) - parseInt(1)).toString()
       } else {
         item.isLike = true
-        let res = common.addLike(item.id)
+        let res = common.addLike(item.id,item.user_id)
         res.then(result => {
           item.like = result
           // console.log(item.like)

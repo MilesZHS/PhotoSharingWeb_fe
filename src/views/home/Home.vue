@@ -66,7 +66,11 @@
         <span class="iconfont icon-tuichu"></span>
       </div>
     </div>
-    <image-uploader :userId="userId" :classifyList="classifyList" v-if="showUploadForm"></image-uploader>
+    <image-uploader
+      :userId="userId"
+      :classifyList="classifyList"
+      v-if="showUploadForm"
+    ></image-uploader>
     <page-footer></page-footer>
   </div>
 </template>
@@ -83,7 +87,7 @@ import ImageUploader from "../../components/ImageUploader"
 import event from "../../common/Event.js"
 import axios from "axios"
 import global from "../../common/global.js"
-// import common from "../../common/common.js"
+import common from "../../common/common.js"
 export default {
   components: {
     HeaderNav,
@@ -123,7 +127,26 @@ export default {
       this.$router.push("/identity")
     },
     showDialog() {
-      this.showUploadForm = true
+      const token = JSON.parse(localStorage.getItem("user"))["token"]
+      const id = common.getUserID()
+      const getUploadToken = axios.create()
+      getUploadToken
+        .post(
+          global.host + "uploadtoken",
+          { id },
+          {
+            headers: {
+              token: token
+            }
+          }
+        )
+        .then(() => {
+          this.showUploadForm = true
+        })
+        .catch(err => {
+          console.log(err.response)
+          this.$message.error(err.response.data.message)
+        })
     },
     closeDialog(flag) {
       this.showUploadForm = flag
@@ -150,7 +173,8 @@ export default {
       })
       .then(res => {
         this.classifyList = res.data.data
-      }).catch(err => {
+      })
+      .catch(err => {
         console.log(err.response)
       })
   },

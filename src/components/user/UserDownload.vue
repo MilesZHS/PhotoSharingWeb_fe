@@ -12,9 +12,9 @@
         border
         style="width: 100%"
       >
-        <el-table-column prop="name" label="图片名称" width="100">
+        <el-table-column prop="name" label="图片名称" width="120">
         </el-table-column>
-        <el-table-column prop="download_time" label="下载日期" width="100">
+        <el-table-column prop="create_time" label="下载日期" width="100">
         </el-table-column>
         <el-table-column prop="zipUrl" label="缩略图" width="80">
           <template slot-scope="scope">
@@ -54,7 +54,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="currentPage"
-            :page-sizes="[1, 10, 50, 100]"
+            :page-sizes="[5, 10, 50, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="totalPages"
@@ -78,30 +78,15 @@
 </template>
 
 <script>
+import common from "../../common/common.js"
+import global from "../../common/global.js"
+import axios from "axios"
 export default {
   data() {
     return {
       currentPage: 1, //当前页码
-      pageSize: 1, //一页展示几条数据
+      pageSize: 5, //一页展示几条数据
       downloadTableData: [
-        {
-          name: "vuex",
-          download_time: "2020-04-24",
-          zipUrl: require("../../assets/logo.png"),
-          tags: ["抗疫", "风光", "建筑", "人像"]
-        },
-        {
-          name: "vuex",
-          download_time: "2020-04-24",
-          zipUrl: require("../../assets/logo.png"),
-          tags: ["抗疫", "风光", "建筑", "人像"]
-        },
-        {
-          name: "vuex",
-          download_time: "2020-04-24",
-          zipUrl: require("../../assets/logo.png"),
-          tags: ["抗疫", "风光", "建筑", "人像"]
-        }
       ],
       fit: "cover", //el-avatar适应容器选项,
       screenWidth: ""
@@ -122,12 +107,29 @@ export default {
   },
   computed: {
     totalPages() {
-      return parseInt(
-        this.downloadTableData.length % this.pageSize === 0
-          ? this.downloadTableData.length / this.pageSize
-          : this.downloadTableData.length / this.pageSize + 1
-      )
-    }
+      return this.downloadTableData.length
+    },
+  },
+  created() {
+    const token = common.getToken()
+    const id = common.getUserID()
+    const downReq = axios.create()
+    downReq
+      .get(global.host + "downloadrecord", {
+        params: {
+          id
+        },
+        headers: {
+          token
+        }
+      })
+      .then(res => {
+        this.downloadTableData = res.data.data
+        // console.log(this.downloadTableData)
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
   },
   mounted() {
     this.screenWidth = window.innerWidth

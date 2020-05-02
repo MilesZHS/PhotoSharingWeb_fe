@@ -58,24 +58,6 @@ export default {
       ],
       //分类图片列表
       classifyItemImgList: [
-        // {
-        //   tagName: "抗疫",
-        //   imgList: [
-        //     {
-        //       id: 1,
-        //       imgUrl: require("../assets/web/1.jpg")
-        //     }
-        //   ]
-        // },
-        // {
-        //   tagName: "风光",
-        //   imgList: [
-        //     {
-        //       id: 2,
-        //       imgUrl: require("../assets/web/2.jpg")
-        //     }
-        //   ]
-        // }
       ],
       //全部分类图片列表
       imgList: [
@@ -259,7 +241,7 @@ export default {
           for (let i = 0; i < result.length; i++) {
             this.classifyItemImgList.push(result[i])
           }
-          console.log(this.classifyItemImgList)
+          // console.log(this.classifyItemImgList)
         })
         .catch(err => {
           this.$message.error(err.response.data.message)

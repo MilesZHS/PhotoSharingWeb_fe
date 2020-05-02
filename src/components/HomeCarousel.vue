@@ -129,7 +129,7 @@ export default {
         })
         item.isLike = false
       } else {
-        let res = common.addLike(item.id)
+        let res = common.addLike(item.id,item.user_id)
         res.then(result => {
           item.like = result
         })

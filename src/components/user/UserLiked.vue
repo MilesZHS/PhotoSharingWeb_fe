@@ -11,7 +11,7 @@
           ></el-avatar>
         </template>
       </el-table-column>
-      <el-table-column width="140">
+      <el-table-column width="350">
         <template slot-scope="scope">
           <ul style="list-style: none">
             <li>{{ scope.row.username }}</li>
@@ -20,9 +20,9 @@
         </template>
       </el-table-column>
 			<el-table-column align="center">
-        <template slot-scope="scope">
+        <template slot-scope="">
           <div class="like-btn">
-						<span class="iconfont icon-tubiao_dianzan">{{scope.empty}}</span>
+						<span class="iconfont icon-tubiao_dianzan"></span>
 					</div>
         </template>
       </el-table-column>
@@ -41,20 +41,40 @@
 </template>
 
 <script>
+import common from '../../common/common.js'
+import global from '../../common/global.js'
+import axios from 'axios'
 export default {
   data() {
     return {
       fit: "cover",
       tableData: [
-        {
-          username: "zhangsan",
-          avatar: require("../../assets/logo.png"),
-          create_time: "2014-04-20",
-					zipUrl: require("../../assets/logo.png"),
-					empty: ''
-        }
+        // {
+        //   username: "zhangsan",
+        //   avatar: require("../../assets/logo.png"),
+        //   create_time: "2014-04-20",
+				// 	zipUrl: require("../../assets/logo.png"),
+				// 	empty: ''
+        // }
       ]
     }
+  },
+  created(){
+    const token = common.getToken()
+    const id = common.getUserID()
+    const req = axios.create()
+    req.get(global.host + 'likedrecord',{
+      params: {
+        id
+      },
+      headers: {
+        token
+      }
+    }).then(res => {
+      this.tableData = res.data.data
+    }).catch(err => {
+      console.log(err.response)
+    })
   }
 }
 </script>
@@ -62,7 +82,7 @@ export default {
 <style scoped>
 .liked {
   width: 40%;
-  margin: 0 auto;
+  margin: 20px auto;
   /* border: 1px solid red; */
 }
 .like-btn{

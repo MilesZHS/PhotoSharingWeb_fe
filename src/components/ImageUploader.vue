@@ -271,11 +271,12 @@ export default {
     if (this.userId != null) {
       this.uploadForm.user_id = this.userId
       const token = JSON.parse(localStorage.getItem("user"))["token"]
+      const id = common.getUserID()
       const getUploadToken = axios.create()
       getUploadToken
         .post(
           global.host + "uploadtoken",
-          {},
+          {id},
           {
             headers: {
               token: token
@@ -292,6 +293,7 @@ export default {
         })
         .catch(err => {
           console.log(err.response)
+          this.$message.error(err.response.data.message)
         })
     }
   }
