@@ -36,15 +36,18 @@
             >
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column fixed="right" label="操作" width="60">
           <template slot-scope="scope">
+            <!-- <el-button type="text" size="small">删除</el-button> -->
             <el-button
-              @click="handleDownloadTableClick(scope.row)"
               type="text"
               size="small"
-              >删除</el-button
+              @click="handleDownloadTableClick(scope.row)"
             >
-            <el-button type="text" size="small">下载</el-button>
+              <a :href="downloadUrl" class="download-btn">
+                下载
+              </a>
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,15 +89,25 @@ export default {
     return {
       currentPage: 1, //当前页码
       pageSize: 5, //一页展示几条数据
-      downloadTableData: [
-      ],
+      downloadTableData: [],
       fit: "cover", //el-avatar适应容器选项,
-      screenWidth: ""
+      screenWidth: "",
+      downloadUrl: ""
     }
   },
   methods: {
-    handleDownloadTableClick(row) {
-      console.log(row)
+    handleDownloadTableClick(item) {
+      // console.log(row)
+      const name = item.imgUrl.split("/").pop()
+      const name1 = name.split("?").shift()
+      const a = item.imgUrl.split("?")
+      const newUrl = a[0]
+      this.downloadUrl = newUrl + "?attname=" + encodeURI(name1)
+      console.log(this.downloadUrl)
+      let res = common.addDownload(item.id)
+      res.then(result => {
+        item.download = result
+      })
     },
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`)
@@ -108,7 +121,7 @@ export default {
   computed: {
     totalPages() {
       return this.downloadTableData.length
-    },
+    }
   },
   created() {
     const token = common.getToken()
@@ -148,6 +161,9 @@ export default {
 .block {
   text-align: center;
   margin-top: 20px;
+}
+.download-btn {
+  color: #46a1ff;
 }
 @media screen and (min-width: 1900px) {
   .download {

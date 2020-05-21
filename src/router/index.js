@@ -8,7 +8,10 @@ Vue.use(VueRouter)
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      title: 'PhotoSharingWeb'
+    }
   },
   {
     path: '/identity',
@@ -16,7 +19,10 @@ Vue.use(VueRouter)
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import('../views/identity/Identity.vue')
+    component: () => import('../views/identity/Identity.vue'),
+    meta: {
+      title: '登录/注册'
+    }
   },
   {
     path: '/user',
@@ -24,7 +30,10 @@ Vue.use(VueRouter)
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import('../views/user/User.vue')
+    component: () => import('../views/user/User.vue'),
+    meta: {
+      title: '个人中心'
+    }
   },{
     path: '/test',
     name: 'Test',
@@ -36,13 +45,20 @@ Vue.use(VueRouter)
     path: '/uploadtag',
     name: 'UploadTag',
     component: () => import('../views/admin/UploadTag.vue')
+  },{
+    path: '/search',
+    name: 'Search',
+    component: () => import('../views/search/Search.vue'),
+    meta: {
+      title: '搜索'
+    }
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  // base: '/photosharing.com',
+  // base: '/',
   routes
 })
 

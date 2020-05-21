@@ -77,13 +77,13 @@
 
 <script>
 import HeaderNav from "../../components/HeaderNav.vue"
-import HomeCarousel from "../../components/HomeCarousel.vue"
+import HomeCarousel from "../../components/home/HomeCarousel.vue"
 import "../../assets/css/animate.min.css"
-import HomeClassify from "../../components/HomeClassify.vue"
-import TopTen from "../../components/TopTen.vue"
-import NewUpload from "../../components/NewUpload.vue"
+import HomeClassify from "../../components/home/HomeClassify.vue"
+import TopTen from "../../components/home/TopTen.vue"
+import NewUpload from "../../components/home/NewUpload.vue"
 import PageFooter from "../../components/PageFooter.vue"
-import ImageUploader from "../../components/ImageUploader"
+import ImageUploader from "../../components/home/ImageUploader"
 import event from "../../common/Event.js"
 import axios from "axios"
 import global from "../../common/global.js"
@@ -176,6 +176,9 @@ export default {
       })
       .catch(err => {
         console.log(err.response)
+        if(!common.checkIdentity(err.response.data.message)){
+          this.$router.push('/identity')
+        }
       })
   },
   mounted() {
@@ -261,7 +264,7 @@ export default {
   position: fixed;
   top: 60%;
   right: 1%;
-  z-index: 999999;
+  z-index: 990;
 }
 #goto-top-btn {
   border-radius: 50%;

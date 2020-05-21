@@ -53,15 +53,18 @@
             <el-button
               type="text"
               size="small"
-              @click="dialogFormShow(scope.row)"
+              @click="dialogFormShow(scope.row,scope.$index)"
               >编辑</el-button
             >
             <el-button
               type="text"
               size="small"
               @click="handleUploadTableClick(scope.row)"
-              >下载</el-button
             >
+              <a :href="downloadUrl" class="download-btn">
+                下载
+              </a>
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -90,109 +93,119 @@
           </el-pagination>
         </div>
       </div>
-      <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
-        <el-form :model="editForm">
-          <el-form-item>
-            <img :src="editForm.imgUrl" width="100%" alt="" />
-          </el-form-item>
-          <el-form-item label="图片名称" :label-width="formLabelWidth">
-            <el-input v-model="editForm.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="上传时间" :label-width="formLabelWidth">
-            <el-input v-model="editForm.create_time" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="首页显示" :label-width="formLabelWidth">
-            <el-switch v-model="editForm.homeShow"> </el-switch>
-          </el-form-item>
-          <el-form-item label="标签" :label-width="formLabelWidth">
-            <el-tag
-              :key="tag"
-              v-for="tag in editForm.tags"
-              closable
-              :disable-transitions="false"
-              @close="handleClose(tag)"
-            >
-              {{ tag }}
-            </el-tag>
-            <el-input
-              class="input-new-tag"
-              v-if="inputVisible"
-              v-model="inputValue"
-              ref="saveTagInput"
-              size="small"
-              @keyup.enter.native="handleInputConfirm"
-              @blur="handleInputConfirm"
-            >
-            </el-input>
-            <el-button
-              v-else
-              class="button-new-tag"
-              size="small"
-              @click="showInput"
-              >+ New Tag</el-button
-            >
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="cancelChange()">取 消</el-button>
-          <el-button type="primary" @click="submitChange()">确 定</el-button>
+      <div class="editform-container" v-if="dialogFormVisible" :style="{height: this.screenHeight + 'px'}">
+        <div class="editform-wrapper">
+          <el-form :model="editForm">
+            <el-form-item>
+              <img :src="editForm.imgUrl" alt="" class="edit-img"/>
+            </el-form-item>
+            <el-form-item label="图片名称" :label-width="formLabelWidth">
+              <el-input v-model="editForm.name" autocomplete="off" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="上传时间" :label-width="formLabelWidth">
+              <el-input v-model="editForm.create_time" disabled style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="首页显示" :label-width="formLabelWidth">
+              <el-switch v-model="editForm.homeShow" style="width:200px"> </el-switch>
+            </el-form-item>
+            <el-form-item label="标签" :label-width="formLabelWidth">
+              <el-tag
+                :key="tag"
+                v-for="tag in editForm.tags"
+                closable
+                :disable-transitions="false"
+                @close="handleClose(tag)"
+                
+              >
+                {{ tag }}
+              </el-tag>
+              <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm"
+                 style="width:200px"
+              >
+              </el-input>
+              <el-button
+                v-else
+                class="button-new-tag"
+                size="small"
+                @click="showInput"
+                >+ New Tag</el-button
+              >
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="cancelChange()">取 消</el-button>
+              <el-button type="primary" @click="submitChange()"
+                >确 定</el-button
+              >
+            </el-form-item>
+          </el-form>
         </div>
-      </el-dialog>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import common from '../../common/common.js'
-import global from '../../common/global.js'
-import axios from 'axios'
+import common from "../../common/common.js"
+import global from "../../common/global.js"
+import axios from "axios"
 export default {
   data() {
     return {
       currentPage: 1, //当前页码
       pageSize: 5, //一页展示几条数据
-      uploadTableData: [
-        // {
-        //   name: "vuex",
-        //   create_time: "2020-04-24",
-        //   zipUrl: require("../../assets/logo.png"),
-        //   imgUrl: require("../../assets/logo.png"),
-        //   download: "11",
-        //   like: "1",
-        //   collect: "10",
-        //   homeShow: true,
-        //   tags: ["抗疫", "风光", "建筑", "人像"]
-        // },
-      ],
+      uploadTableData: [],
       fit: "cover", //el-avatar适应容器选项,
       screenWidth: "",
+      screenHeight: '',
       dialogFormVisible: false,
       editForm: {},
       editFormCopy: {},
       editFormCopy1: {},
+      editIndex: 0,
       index: 0,
-      formLabelWidth: "120px",
+      formLabelWidth: "80px",
       inputVisible: false,
       inputValue: "",
+      downloadUrl: ""
     }
   },
   methods: {
-    handleUploadTableClick(row) {
-      console.log(row)
+    handleUploadTableClick(item) {
+      // console.log(row)
+      const name = item.imgUrl.split("/").pop()
+      const name1 = name.split("?").shift()
+      const a = item.imgUrl.split("?")
+      const newUrl = a[0]
+      this.downloadUrl = newUrl + "?attname=" + encodeURI(name1)
+      console.log(this.downloadUrl)
+      let res = common.addDownload(item.id)
+      res.then(result => {
+        item.download = result
+      })
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      // console.log(`每页 ${val} 条`)
       this.pageSize = val
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      // console.log(`当前页: ${val}`)
       this.currentPage = val
     },
-    dialogFormShow(item) {
+    dialogFormShow(item,index) {
       this.dialogFormVisible = true
-      this.editForm = this.deepCopy(item)
+      this.editForm = common.deepCopy(item)
+      this.editForm.tags = Object.values(this.editForm.tags)
+      this.editIndex = index
     },
     handleClose(tag) {
+      console.log(this.editForm['tags'])
       this.editForm.tags.splice(this.editForm.tags.indexOf(tag), 1)
     },
     showInput() {
@@ -213,22 +226,45 @@ export default {
       this.dialogFormVisible = false
     },
     submitChange() {
-      this.dialogFormVisible = false
+      const token = common.getToken()
+      const req = axios.create()
+      req.post(global.host + 'updateimginfo',{
+        id: this.editForm.id,
+        name: this.editForm.name,
+        tags: this.editForm.tags.join(','),
+        homeShow: this.editForm.homeShow
+      },{
+        headers: {
+          token
+        }
+      }).then(res => {
+        res.data.data[0].homeShow = res.data.data[0].homeShow === 1 ? true : false
+        this.uploadTableData[this.editIndex] = res.data.data[0]
+        // console.log(this.uploadTableData[this.editIndex])
+        this.$message({
+          message: '修改成功',
+          type: 'success'
+        })
+        this.dialogFormVisible = false
+      }).catch(err => {
+        console.log(err.response)
+      })
+      
     },
-    deepCopy(obj = {}){
-      if(typeof obj !== 'object' || obj == null){
+    deepCopy(obj = {}) {
+      if (typeof obj !== "object" || obj == null) {
         return obj
       }
       let res
-      if(obj instanceof Array){
+      if (obj instanceof Array) {
         res = []
       }
-      if(obj instanceof Object){
+      if (obj instanceof Object) {
         res = {}
       }
-      for(let key in obj){
+      for (let key in obj) {
         // eslint-disable-next-line no-prototype-builtins
-        if(obj.hasOwnProperty(key)){
+        if (obj.hasOwnProperty(key)) {
           res[key] = this.deepCopy(obj[key])
         }
       }
@@ -238,34 +274,40 @@ export default {
   computed: {
     totalPages() {
       return this.uploadTableData.length
-    },
+    }
   },
   mounted() {
     this.screenWidth = window.innerWidth
+    this.screenHeight = window.innerHeight
     window.onresize = () => {
       this.screenWidth = window.innerWidth
+      this.screenHeight = window.innerHeight
     }
   },
-  created(){
+  created() {
     const token = common.getToken()
     const id = common.getUserID()
     const getUploadRecord = axios.create()
-    getUploadRecord.get(global.host + 'uploadrecord',{
-      params: {
-        id
-      },
-      headers: {
-        token
-      }
-    }).then(res => {
-      // let result = res.data.data
-      this.uploadTableData = res.data.data
-      for(let i = 0 ; i < this.uploadTableData.length ; i++){
-        this.uploadTableData[i].homeShow  = this.uploadTableData[i].homeShow === 1 ? true : false
-      }
-    }).catch(err => {
-      console.log(err.response)
-    })
+    getUploadRecord
+      .get(global.host + "uploadrecord", {
+        params: {
+          id
+        },
+        headers: {
+          token
+        }
+      })
+      .then(res => {
+        // let result = res.data.data
+        this.uploadTableData = res.data.data
+        for (let i = 0; i < this.uploadTableData.length; i++) {
+          this.uploadTableData[i].homeShow =
+            this.uploadTableData[i].homeShow === 1 ? true : false
+        }
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
   }
 }
 </script>
@@ -293,6 +335,33 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+.download-btn {
+  color: #46a1ff;
+}
+.editform-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(54, 54, 54, 0.8);
+  z-index: 99999;
+}
+.editform-wrapper{
+  position: fixed;
+  width: 320px;
+  height: 640px;
+  top: 50%;
+  left: 50%;
+  margin-top: -320px;
+  margin-left: -160px;
+  background-color: white;
+  border-radius: 12px;
+  text-align: center;
+}
+.edit-img{
+  width: 80%;
+  margin: 0 10%;
 }
 @media screen and (min-width: 1900px) {
   .upload {

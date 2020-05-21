@@ -18,6 +18,7 @@ Vue.use(VueLazyload,{
 })
 
 router.beforeEach((to,from,next) => {
+  document.title = to.meta.title
   if(localStorage.getItem('user') || to.path === '/identity') {
     next()
   }else {

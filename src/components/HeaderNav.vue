@@ -1,23 +1,32 @@
 <template>
   <div>
-    <header :class="{headerWhiteBg:whiteBg,hideSearchClass:isHideSearch}">
+    <header :class="{ headerWhiteBg: whiteBg, hideSearchClass: isHideSearch }">
       <nav>
         <ul>
-          <li id="logo" :class="{logoWhiteBg:whiteBg}"><router-link to="/">PhotoSharing</router-link></li>
+          <li id="logo" :class="{ logoWhiteBg: whiteBg }">
+            <router-link to="/">PhotoSharing</router-link>
+          </li>
           <li id="search" v-if="!isHideSearch">
             <div id="search-wrapper">
-              <input
-                type="text"
-                id="search-input"
-                placeholder="搜索图片关键词"
-                 :class="{inputWhiteBg:whiteBg}"
-              />
-              <button id="search-btn"  :class="{buttonWhiteBg:whiteBg}">
-                <i class="el-icon-search"></i> 搜索
-              </button>
+              <slot name="input">
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="搜索图片关键词"
+                  :class="{ inputWhiteBg: whiteBg }"
+                  v-model="inputVal"
+                />
+                <button
+                  id="search-btn"
+                  :class="{ buttonWhiteBg: whiteBg }"
+                  @click="searchClick()"
+                >
+                  <i class="el-icon-search"></i> 搜索
+                </button>
+              </slot>
             </div>
           </li>
-          <li id="identity" :class="{identityWhiteBg:whiteBg}">
+          <li id="identity" :class="{ identityWhiteBg: whiteBg }">
             <slot>
               <router-link to="/identity">登录&nbsp;|&nbsp;注册</router-link>
             </slot>
@@ -30,28 +39,39 @@
 
 <script>
 export default {
-  props: ['bgColor','hideSearch'],
-  data(){
+  props: ["bgColor", "hideSearch"],
+  data() {
     return {
-      screenWidth: ''
+      screenWidth: "",
+      inputVal: ""
+    }
+  },
+  methods: {
+    searchClick() {
+      this.$router.push({
+        path: "/search",
+        query: {
+          searchInfo: this.inputVal
+        }
+      })
     }
   },
   computed: {
-    whiteBg(){
-      if(this.bgColor === true){
+    whiteBg() {
+      if (this.bgColor === true) {
         return true
-      }else{
+      } else {
         return false
       }
     },
-    isHideSearch(){
-      if(this.screenWidth < 768 && this.hideSearch === true){
+    isHideSearch() {
+      if (this.screenWidth < 768 && this.hideSearch === true) {
         return true
       }
       return false
     }
   },
-  mounted(){
+  mounted() {
     this.screenWidth = window.innerWidth
     window.onresize = () => {
       this.screenWidth = window.innerWidth
@@ -99,6 +119,7 @@ nav ul {
   overflow: hidden;
   margin: 0 auto;
   display: block;
+  outline: #ff1b89;
 }
 #search-input {
   border-top-left-radius: 15px;
@@ -106,12 +127,14 @@ nav ul {
   width: 340px;
   height: 30px;
   padding-left: 16px;
-  outline: none;
   border: none;
   background-color: rgba(255, 255, 255, 0.8);
   margin-right: 1px;
   color: #999999;
   vertical-align: middle;
+}
+#search-input:focus{
+  border: 1px solid #ff1b89;
 }
 #search-btn {
   border-top-right-radius: 15px;
@@ -146,21 +169,21 @@ nav ul {
 }
 
 /* 白色主题样式 */
-.headerWhiteBg{
+.headerWhiteBg {
   background-color: #ffffff !important;
   border-bottom: 1px solid #c4c4c4 !important;
   background-image: none !important;
 }
-.logoWhiteBg a{
+.logoWhiteBg a {
   color: #ff1b89 !important;
 }
-.identityWhiteBg a{
+.identityWhiteBg a {
   color: #ff1b89 !important;
 }
-.inputWhiteBg{
+.inputWhiteBg {
   background-color: #f1f1f1 !important;
 }
-.buttonWhiteBg{
+.buttonWhiteBg {
   background-color: #f1f1f1 !important;
 }
 @media screen and (max-width: 768px) {
@@ -171,10 +194,10 @@ nav ul {
     background-color: rgb(255, 255, 255);
     background-image: none;
   }
-  .hideSearchClass{
+  .hideSearchClass {
     height: auto;
   }
-  #logo a{
+  #logo a {
     /* background-image: -webkit-linear-gradient( #FF1A89, #F57F66);
     background-clip: text;
     -webkit-text-fill-color: transparent; */

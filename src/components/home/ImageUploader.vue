@@ -159,9 +159,9 @@
 
 <script>
 import axios from "axios"
-import global from "../common/global.js"
-import common from "../common/common.js"
-import event from "../common/Event.js"
+import global from "../../common/global.js"
+import common from "../../common/common.js"
+import event from "../../common/Event.js"
 export default {
   props: ["userId", "classifyList"],
   data() {

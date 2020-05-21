@@ -5,7 +5,8 @@
         <el-carousel :height="carouselHeight + 'px'" :interval="5000">
           <el-carousel-item v-for="(item, id) in bannerList" :key="id">
             <img
-              :src="item.imgUrl"
+             @click="showIntact(item)"
+              v-lazy="item.imgUrl"
               alt=""
               :height="carouselHeight"
               class="carousel-img"
@@ -17,7 +18,7 @@
                   :class="{ active: item.isCollect }"
                   @click="addCollect(item)"
                 >
-                  <el-tooltip
+                  <el-tooltip 
                     class="item"
                     effect="dark"
                     :content="item.collect.toString()"
@@ -64,19 +65,27 @@
         </el-carousel>
       </div>
     </section>
+    <show-intact :imgItem="imgItem" v-if="isShowIntact"></show-intact>
   </div>
 </template>
 
 <script>
-import common from "../common/common.js"
-import global from "../common/global.js"
+import common from "../../common/common.js"
+import global from "../../common/global.js"
 import axios from "axios"
+import ShowIntact from './ShowIntact.vue'
+import event from '../../common/Event.js'
 export default {
+  components: {
+    ShowIntact
+  },
   data() {
     return {
       screenWidth: "",
       bannerList: [],
-      downloadUrl: ""
+      downloadUrl: "",
+      imgItem: {},
+      isShowIntact: false
     }
   },
   computed: {
@@ -135,6 +144,13 @@ export default {
         })
         item.isLike = true
       }
+    },
+    showIntact(item){
+      this.imgItem = item
+      this.isShowIntact = true
+    },
+    closeIntact(){
+      this.isShowIntact = false
     }
   },
   created() {
@@ -152,7 +168,8 @@ export default {
       })
       .then(res => {
         let result = res.data.data
-        for (let i = 0; i < result.length; i++) {
+        console.log(result)
+        for (let i = 0; i < result.length/2; i++) {
           this.bannerList.push(result[i])
         }
       })
@@ -165,6 +182,10 @@ export default {
     window.onresize = () => {
       this.screenWidth = document.body.clientWidth
     }
+    event.$on("closeIntact",this.closeIntact)
+  },
+  beforeDestroy(){
+    event.$off('closeIntact',this.closeIntact)
   }
 }
 </script>

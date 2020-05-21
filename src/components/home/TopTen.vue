@@ -9,7 +9,7 @@
         </div>
         <el-card :body-style="{ padding: '0px' }">
           <div class="image-wrapper">
-            <img v-lazy="item.imgUrl" class="image" />
+            <img v-lazy="item.imgUrl" @click="showIntact(item)" class="image" />
           </div>
           <div style="padding: 14px;">
             <span>{{ item.name }}</span>
@@ -51,23 +51,31 @@
         </el-card>
       </div>
     </div>
+    <show-intact :imgItem="imgItem" v-if="isShowIntact"></show-intact>
   </div>
 </template>
 
 <script>
 import axios from "axios"
-import global from "../common/global.js"
-import common from "../common/common.js"
+import global from "../../common/global.js"
+import common from "../../common/common.js"
+import ShowIntact from '../home/ShowIntact.vue'
+import event from '../../common/Event.js'
 export default {
+  components: {
+    ShowIntact
+  },
   data() {
     return {
       medal: {
-        goldImg: require("../assets/web/gold.png"),
-        silverImg: require("../assets/web/silver.png"),
-        copperImg: require("../assets/web/copper.png")
+        goldImg: require("../../assets/web/gold.png"),
+        silverImg: require("../../assets/web/silver.png"),
+        copperImg: require("../../assets/web/copper.png")
       },
       topTen: [],
-      downloadUrl: ""
+      downloadUrl: "",
+      imgItem: {},
+      isShowIntact: false
     }
   },
   methods: {
@@ -91,16 +99,6 @@ export default {
       }
     },
     topTenDownload(item) {
-      // const name = item.imgUrl.split('/').pop()
-      // this.downloadUrl = item.imgUrl + '?attname=' + encodeURI(name)
-      // console.log(this.downloadUrl)
-      // if (item.isDownload === true) {
-      //   item.isDownload = false
-      //   item.download = (parseInt(item.download) - parseInt(1)).toString()
-      // } else {
-      //   item.isDownload = true
-      //   item.download = (parseInt(item.download) + parseInt(1)).toString()
-      // }
       const name = item.imgUrl.split("/").pop()
       const name1 = name.split("?").shift();
       const a = item.imgUrl.split('?')
@@ -133,6 +131,13 @@ export default {
         })
         item.isCollect = true
       }
+    },
+    showIntact(item){
+      this.imgItem = item
+      this.isShowIntact = true
+    },
+    closeIntact(){
+      this.isShowIntact = false
     }
   },
   created() {
@@ -153,7 +158,18 @@ export default {
         for (let i = 0; i < result.length; i++) {
           this.topTen.push(result[i])
         }
+        console.log(res)
+      }).catch(err => {
+        console.log(err.response)
+        console.log(err)
+        alert(err.response)
       })
+  },
+  mounted(){
+    event.$on("closeIntact",this.closeIntact)
+  },
+  beforeDestroy(){
+    event.$off('closeIntact',this.closeIntact)
   }
 }
 </script>

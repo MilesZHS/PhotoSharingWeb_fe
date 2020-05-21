@@ -15,7 +15,7 @@
     <section>
       <div class="user">
         <div class="userinfo-container">
-          <h3>我的信息 &nbsp;&nbsp;<span @click="updateUserInfo()">修改</span></h3>
+          <h3>我的信息 &nbsp;&nbsp;<span @click="updateClick()">修改</span></h3>
           <div class="user-avatar">
             <div id="avatar-component">
               <avatar-upload :avatar="userInfo.avatar"></avatar-upload>
@@ -74,13 +74,14 @@
               <h3 style="padding-left:16px">
                 我的信息 &nbsp;&nbsp;<span
                   style="font-size:12px;font-weight:normal"
+                  @click="updateClick()"
                   >修改</span
                 >
               </h3>
             </template>
             <div class="userinfo-container-mobile">
               <div class="avatar-wrapper-mobile">
-                <img :src="userInfo.avatarUrl" alt="" />
+                <img :src="userInfo.avatar" alt="" />
               </div>
               <div class="avatar-aside-mobile">
                 <div>
@@ -167,6 +168,28 @@
       <user-liked v-if="isTabName === '收到的赞'"></user-liked>
       <user-collect v-if="isTabName === '收藏夹'"></user-collect>
     </section>
+    <page-footer></page-footer>
+    <div v-if="showUpdateForm" class="update-form-container" :style="{height: this.screenHeight + 'px'}">
+      <div class="update-form-wrapper">
+        <el-form ref="updateForm" :model="updateForm" label-width="80px">
+          <el-form-item label="用户名">
+            <el-input v-model="updateForm.username" style="width:200px"></el-input>
+          </el-form-item>
+          <el-form-item label="性别">
+            <el-radio v-model="updateForm.gender" label="男">男</el-radio>
+            <el-radio v-model="updateForm.gender" label="女">女</el-radio>
+          </el-form-item>
+          <el-form-item label="生日">
+            <el-date-picker v-model="updateForm.birthday" type="date" placeholder="选择生日" style="width:200px" value-format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="updateUserInfo()">更新</el-button>
+            <el-button @click="closeUpdateForm()">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -176,12 +199,13 @@ import AvatarUpload from "../../components/avatar/AvatarUpload.vue"
 import UserUpload from "../../components/user/UserUpload.vue"
 import UserDownload from "../../components/user/UserDownload.vue"
 import UserLike from "../../components/user/UserLike.vue"
-import UserCollect from '../../components/user/UserCollect.vue'
-import UserLiked from '../../components/user/UserLiked.vue'
-import axios from 'axios'
-import global from '../../common/global.js'
-import common from '../../common/common.js'
-import event from '../../common/Event.js'
+import UserCollect from "../../components/user/UserCollect.vue"
+import UserLiked from "../../components/user/UserLiked.vue"
+import axios from "axios"
+import global from "../../common/global.js"
+import common from "../../common/common.js"
+import event from "../../common/Event.js"
+import PageFooter from "../../components/PageFooter.vue"
 export default {
   components: {
     HeaderNav,
@@ -190,7 +214,8 @@ export default {
     UserDownload,
     UserLike,
     UserCollect,
-    UserLiked
+    UserLiked,
+    PageFooter
   },
   data() {
     return {
@@ -203,17 +228,9 @@ export default {
       userName: "18560677018",
       avatar: require("../../assets/logo.png"),
       userInfo: {},
-      showUpdateForm: false
-      // {
-      //   username: "张珅",
-      //   gender: "男",
-      //   birthday: "1999-06-08",
-      //   uploadNum: "100",
-      //   downloadNum: "200",
-      //   likeNum: "20",
-      //   collectNum: "80",
-      //   avatarUrl: require("../../assets/logo.png")
-      // }
+      showUpdateForm: false,
+      updateForm: {},
+      screenHeight: ''
     }
   },
   methods: {
@@ -226,33 +243,73 @@ export default {
     changeTabName(item) {
       this.isTabName = item
     },
-    updateUserInfo(){
+    updateClick() {
+      this.showUpdateForm = true
+      this.updateForm = common.deepCopy(this.userInfo)
     },
-    changedAvatar(url){
+    closeUpdateForm() {
+      this.showUpdateForm = false
+    },
+    updateUserInfo(){
+      const id = common.getUserID()
+      const token = common.getToken()
+      const req = axios.create()
+      req.post(global.host + 'updateuserinfo',{
+        id,
+        username: this.updateForm.username,
+        birthday: this.updateForm.birthday,
+        gender: this.updateForm.gender
+      },{
+        headers: {
+          token
+        }
+      }).then(res => {
+        this.userInfo = res.data.data
+        this.$message({
+          message: '修改成功',
+          type: 'success'
+        })
+        this.showUpdateForm = false
+      }).catch(err => {
+        console.log(err.response)
+      })
+    },
+    changedAvatar(url) {
       this.userInfo.avatar = url
-      console.log('url--'+ url)
+      console.log("url--" + url)
     }
   },
-  created(){
+  created() {
     const token = common.getToken()
     const id = common.getUserID()
     const getInfoReq = axios.create()
-    getInfoReq.get(global.host + 'userinfo',{
-      params: {
-        id
-      },
-      headers: {
-        token
-      }
-    }).then(res => {
-      this.userInfo = res.data.data
-    })
+    getInfoReq
+      .get(global.host + "userinfo", {
+        params: {
+          id
+        },
+        headers: {
+          token
+        }
+      })
+      .then(res => {
+        this.userInfo = res.data.data
+      })
+      .catch(err => {
+        if (!common.checkIdentity(err.response.data.message)) {
+          this.$router.push("/identity")
+        }
+      })
   },
-  mounted(){
-    event.$on('changedAvatar',this.changedAvatar)
+  mounted() {
+    event.$on("changedAvatar", this.changedAvatar)
+    this.screenHeight = window.innerHeight
+    window.onresize = () => {
+      this.screenHeight = window.innerHeight
+    }
   },
-  beforeDestroy(){
-    event.$off('changedAvatar',this.changedAvatar)
+  beforeDestroy() {
+    event.$off("changedAvatar", this.changedAvatar)
   }
 }
 </script>
@@ -395,6 +452,26 @@ section {
 #hr {
   border-top: 2px solid #c4c4c4;
   margin-top: -2px;
+}
+.update-form-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 998;
+  background-color: rgba(39, 39, 39, 0.8);
+}
+.update-form-wrapper{
+  width: 320px;
+  height: 300px;
+  background-color: white;
+  border-radius: 12px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -150px;
+  margin-left: -160px;
+  padding-top: 50px;
 }
 @media screen and (max-width: 1200px) {
   #username {

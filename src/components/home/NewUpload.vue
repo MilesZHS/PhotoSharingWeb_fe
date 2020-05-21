@@ -3,7 +3,7 @@
     <div class="card-content" v-for="(item, id) in newUpload" :key="id">
       <el-card :body-style="{ padding: '0px' }">
         <div class="image-wrapper">
-          <img v-lazy="item.imgUrl" class="image" />
+          <img v-lazy="item.imgUrl" @click="showIntact(item)" class="image" />
         </div>
         <div style="padding: 14px;">
           <span>{{ item.name }}</span>
@@ -44,18 +44,26 @@
         </div>
       </el-card>
     </div>
+    <show-intact :imgItem="imgItem" v-if="isShowIntact"></show-intact>
   </div>
 </template>
 
 <script>
-import common from "../common/common.js"
+import common from "../../common/common.js"
 import axios from "axios"
-import global from "../common/global.js"
+import global from "../../common/global.js"
+import ShowIntact from './ShowIntact.vue'
+import event from '../../common/Event.js'
 export default {
+  components: {
+    ShowIntact
+  },
   data() {
     return {
       newUpload: [],
-      downloadUrl: ""
+      downloadUrl: "",
+      imgItem: {},
+      isShowIntact: false
     }
   },
   methods: {
@@ -71,7 +79,7 @@ export default {
         res.then(result => {
           item.collect = result
         })
-        item.isCollect = true
+        item.isCollect = true 
       }
     },
     newUploadLike(item) {
@@ -85,7 +93,7 @@ export default {
         // item.like = (parseInt(item.like) - parseInt(1)).toString()
       } else {
         item.isLike = true
-        let res = common.addLike(item.id,item.user_id)
+        let res = common.addLike(item.id, item.user_id)
         res.then(result => {
           item.like = result
           // console.log(item.like)
@@ -102,8 +110,8 @@ export default {
       //   item.download = (parseInt(item.download) + parseInt(1)).toString()
       // }
       const name = item.imgUrl.split("/").pop()
-      const name1 = name.split("?").shift();
-      const a = item.imgUrl.split('?')
+      const name1 = name.split("?").shift()
+      const a = item.imgUrl.split("?")
       const newUrl = a[0]
       this.downloadUrl = newUrl + "?attname=" + encodeURI(name1)
       console.log(this.downloadUrl)
@@ -119,6 +127,13 @@ export default {
           item.download = result
         })
       }
+    },
+    showIntact(item){
+      this.imgItem = item
+      this.isShowIntact = true
+    },
+    closeIntact(){
+      this.isShowIntact = false
     }
   },
   created() {
@@ -143,6 +158,12 @@ export default {
       .catch(err => {
         this.$message.error(err.response.data.message)
       })
+  },
+  mounted(){
+    event.$on("closeIntact",this.closeIntact)
+  },
+  beforeDestroy(){
+    event.$off('closeIntact',this.closeIntact)
   }
 }
 </script>

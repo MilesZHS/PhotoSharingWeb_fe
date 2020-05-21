@@ -1,6 +1,13 @@
 import Axios from "axios";
 import global from "./global.js";
 
+function checkIdentity(msg){
+  if(msg === '签名已过期，请重新登录'){
+    return false
+  }
+  return true
+}
+
 function deepCopy(obj = {}) {
   if (typeof obj !== "object" || obj == null) {
     return obj;
@@ -170,5 +177,6 @@ export default {
   cancelLike,
   addCollect,
   cancelCollect,
-  addDownload
+  addDownload,
+  checkIdentity
 };

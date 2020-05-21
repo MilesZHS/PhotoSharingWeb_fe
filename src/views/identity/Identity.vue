@@ -197,13 +197,20 @@ export default {
           password: this.loginForm.password
         })
         .then(res => {
-          let userInfo = res["data"]["data"]
-          // alert(res.data.message)
-          localStorage.setItem("user", JSON.stringify(userInfo))
-          this.$router.push("/")
+          // console.log(res)
+          if (res.data.data.token == null) {
+            this.$message.error("登录失败")
+          } else {
+            let userInfo = res["data"]["data"]
+            // alert(res.data.message)
+            localStorage.setItem("user", JSON.stringify(userInfo))
+            this.$router.push("/")
+          }
         })
         .catch(err => {
-          this.$message.error(err.response)
+          // this.$message.error(err.response)
+          alert(err)
+          alert(err.response.data.message)
           this.pictureVerify = false
           this.resetForm("loginForm")
         })
@@ -277,15 +284,25 @@ export default {
               password: this.loginForm.password
             })
             .then(res => {
-              let userInfo = res["data"]["data"]
-              this.$message({
-                message: res.data.message
-              })
-              localStorage.setItem("user", JSON.stringify(userInfo))
-              this.$router.push("/")
+              if (res.data.data.token == null) {
+                this.$message.error("登录失败")
+              } else {
+                let userInfo = res["data"]["data"]
+                // alert(res.data.message)
+                localStorage.setItem("user", JSON.stringify(userInfo))
+                this.$router.push("/")
+              }
+              // let userInfo = res["data"]["data"]
+              // // this.$message({
+              // //   message: res.data.message
+              // // })
+              // alert(res.data.message)
+              // localStorage.setItem("user", JSON.stringify(userInfo))
+              // this.$router.push("/")
             })
             .catch(err => {
-              this.$message.error(err.response.data.message)
+              // this.$message.error(err.response.data.message)
+              alert(err.response.data.message)
               this.slideVerify.show = false
               this.resetForm(formName)
             })
@@ -333,7 +350,7 @@ export default {
 <style scoped>
 .container {
   width: 100%;
-  background-image: url("../../assets/login_bg.png");
+  background-image: url("http://qdu17zs.com/login_bg.png?imageslim");
   background-size: 100% 100% cover;
   background-position: center;
   background-repeat: no-repeat;
